@@ -11,7 +11,7 @@ menu_items = [
 ]
 
 def generate_qrcode():
-    site_url = "http://127.0.0.1:5000/"
+    site_url = "https://orderapp-97th.onrender.com/"
     img = qrcode.make(site_url)
     save_path = os.path.join(app.static_folder, "qrcode.png")
     if not os.path.exists(save_path):  # ✅ 若不存在才生成
@@ -23,4 +23,4 @@ def index():
     return render_template("index.html", menu=menu_items)
 
 if __name__ == "__main__":
-    app.run(debug=True)
+    app.run(host="0.0.0.0", port=10000)
