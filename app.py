@@ -10,17 +10,23 @@ menu_items = [
     {"name": "珍奶", "price": 60, "image": "milktea.jpg"},
 ]
 
+# 🟡 固定網址
+FIXED_SITE_URL = "https://orderapp-97th.onrender.com"
+
 def generate_qrcode():
-    # 使用 Render 的公開網址產生 QR Code
-    site_url = "https://orderapp-97th.onrender.com"
-    img = qrcode.make(site_url)
+    img = qrcode.make(FIXED_SITE_URL)
     save_path = os.path.join(app.static_folder, "qrcode.png")
-    img.save(save_path)  # 強制每次都重新覆蓋 QR Code
+    if not os.path.exists(save_path):  # 如果還沒產生就建立一次
+        img.save(save_path)
+
+# 🟢 啟動時只產生一次
+generate_qrcode()
 
 @app.route("/")
 def index():
-    generate_qrcode()  # 每次進首頁都重新產生 QR Code
     return render_template("index.html", menu=menu_items)
 
 if __name__ == "__main__":
-    app.run(host="0.0.0.0", port=10000)
+    import os
+    port = int(os.environ.get("PORT", 10000))
+    app.run(host="0.0.0.0", port=port)
