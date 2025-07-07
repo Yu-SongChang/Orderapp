@@ -1,12 +1,28 @@
-<h1>訂單紀錄</h1>
-{% for order in orders %}
-  <div>
-    <p>新訂單：</p>
-    <ul>
-      {% for item in order %}
-        <li>{{ item.name }} - 數量：{{ item.quantity }}</li>
-      {% endfor %}
-    </ul>
-  </div>
-  <hr>
-{% endfor %}
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+    <meta charset="UTF-8">
+    <title>訂單管理</title>
+</head>
+<body>
+    <h1>後台管理介面</h1>
+
+    {% if orders %}
+        <h2>所有訂單</h2>
+        <ul>
+            {% for order in orders %}
+                <li>
+                    <strong>一筆訂單：</strong>
+                    <ul>
+                        {% for item in order %}
+                            <li>{{ item.name }} × {{ item.quantity }}</li>
+                        {% endfor %}
+                    </ul>
+                </li>
+            {% endfor %}
+        </ul>
+    {% else %}
+        <p>目前沒有訂單。</p>
+    {% endif %}
+</body>
+</html>
