@@ -2,18 +2,18 @@
 <html lang="zh-Hant">
 <head>
     <meta charset="UTF-8">
-    <title>顧客訂單後台</title>
+    <title>後台訂單管理</title>
 </head>
 <body>
-    <h1>目前收到的訂單</h1>
-    {% if all_orders %}
+    <h1>收到的訂單</h1>
+    {% if orders %}
         <ul>
-            {% for order in all_orders %}
-                <li>{{ order }}</li>
-            {% endfor %}
+        {% for order in orders %}
+            <li>{{ order }}</li>
+        {% endfor %}
         </ul>
     {% else %}
-        <p>尚未有訂單。</p>
+        <p>目前尚無訂單</p>
     {% endif %}
 </body>
 </html>

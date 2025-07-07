@@ -1,27 +1,20 @@
-
 <!DOCTYPE html>
 <html lang="zh-Hant">
 <head>
     <meta charset="UTF-8">
-    <title>線上點餐系統</title>
+    <title>點餐系統</title>
 </head>
 <body>
-    <h1>歡迎使用線上點餐系統</h1>
-    <form method="POST" action="/">
+    <h1>歡迎使用點餐系統</h1>
+    <form action="{{ url_for('order') }}" method="post">
         {% for item in menu %}
-            <div style="margin-bottom: 10px;">
-                <img src="{{ url_for('static', filename='images/' + item.image) }}" alt="{{ item.name }}" width="100"><br>
-                <label>
-                    <input type="checkbox" name="item" value="{{ item.name }}">
-                    {{ item.name }} - {{ item.price }} 元
-                </label>
-            </div>
+        <div>
+            <img src="{{ url_for('static', filename='images/' + item.image) }}" width="100">
+            <p>{{ item.name }} - ${{ item.price }}</p>
+            <input type="checkbox" name="item" value="{{ item.name }}">
+        </div>
         {% endfor %}
         <button type="submit">送出訂單</button>
     </form>
-
-    <hr>
-    <h3>掃描 QR Code 點餐</h3>
-    <img src="{{ url_for('static', filename='qrcode.png') }}" alt="QRCode" width="150">
 </body>
 </html>
