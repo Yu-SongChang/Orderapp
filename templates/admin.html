@@ -23,7 +23,7 @@
                 <li style="margin-bottom: 20px;">
                     <strong>時間：</strong> {{ order.timestamp }}<br>
                     <ul>
-                        {% for item in order.items %}
+                        {% for item in order["items"] %}
                             <li>{{ item.name }} × {{ item.quantity }}（單價：${{ item.price }}）</li>
                         {% endfor %}
                     </ul>
