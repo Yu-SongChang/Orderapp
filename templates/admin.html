@@ -3,21 +3,34 @@
 <head>
     <meta charset="UTF-8">
     <title>訂單管理</title>
+    <script>
+        function confirmClear() {
+            return confirm('確定要清除所有訂單嗎？');
+        }
+        function confirmDelete() {
+            return confirm('確定要刪除此訂單嗎？');
+        }
+    </script>
 </head>
 <body>
-    <h1>後台管理介面</h1>
-
+    <h1>後台訂單管理</h1>
     {% if orders %}
-        <h2>所有訂單</h2>
+        <form method="POST" action="/clear_orders" onsubmit="return confirmClear();">
+            <button type="submit">清除全部訂單</button>
+        </form>
         <ul>
             {% for order in orders %}
-                <li>
-                    <strong>一筆訂單：</strong>
+                <li style="margin-bottom: 20px;">
+                    <strong>時間：</strong> {{ order.timestamp }}<br>
                     <ul>
-                        {% for item in order %}
-                            <li>{{ item.name }} × {{ item.quantity }}</li>
+                        {% for item in order.items %}
+                            <li>{{ item.name }} × {{ item.quantity }}（單價：${{ item.price }}）</li>
                         {% endfor %}
                     </ul>
+                    <strong>總金額：</strong> ${{ order.total }}<br>
+                    <form method="POST" action="/delete_order/{{ loop.index0 }}" onsubmit="return confirmDelete();">
+                        <button type="submit">刪除此訂單</button>
+                    </form>
                 </li>
             {% endfor %}
         </ul>

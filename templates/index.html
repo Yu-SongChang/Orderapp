@@ -5,17 +5,16 @@
     <title>線上點餐</title>
 </head>
 <body>
-    <h1>歡迎點餐</h1>
-
+    <h1>線上點餐系統</h1>
     <form method="POST" action="/submit_order">
         {% for item in menu %}
-            <div>
-                <img src="{{ url_for('static', filename='images/' + item.image) }}" width="150">
+            <div style="margin-bottom: 20px;">
+                <img src="/static/images/{{ item.image }}" alt="{{ item.name }}" width="100">
                 <p>{{ item.name }} - ${{ item.price }}</p>
-                數量：
-                <input type="number" name="quantity_{{ item.name }}" value="0" min="0">
+                <label>數量：
+                    <input type="number" name="quantity_{{ item.name }}" value="0" min="0">
+                </label>
             </div>
-            <hr>
         {% endfor %}
         <button type="submit">送出訂單</button>
     </form>
