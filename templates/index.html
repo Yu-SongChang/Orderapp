@@ -1,108 +1,27 @@
+
 <!DOCTYPE html>
 <html lang="zh-Hant">
 <head>
     <meta charset="UTF-8">
-    <title>點餐系統</title>
-    <style>
-        body { font-family: Arial; padding: 20px; background-color: #f8f8f8; }
-        .menu-item {
-            border: 1px solid #ccc;
-            padding: 10px;
-            margin: 10px;
-            width: 200px;
-            display: inline-block;
-            text-align: center;
-            background: white;
-            border-radius: 8px;
-            box-shadow: 2px 2px 8px rgba(0,0,0,0.1);
-        }
-        .menu-item img {
-            width: 150px;
-            height: 150px;
-            object-fit: cover;
-        }
-        button {
-            margin-top: 10px;
-            padding: 6px 12px;
-            background-color: #4CAF50;
-            color: white;
-            border: none;
-            border-radius: 4px;
-            cursor: pointer;
-        }
-        button:hover {
-            background-color: #45a049;
-        }
-        #cart {
-            margin-top: 40px;
-            padding: 15px;
-            background-color: white;
-            border: 1px solid #ccc;
-            border-radius: 8px;
-            width: 100%;
-            max-width: 600px;
-        }
-        #qrcode-box {
-            margin-top: 40px;
-        }
-    </style>
+    <title>線上點餐系統</title>
 </head>
 <body>
-    <h1>歡迎光臨</h1>
-
-    <div id="menu">
+    <h1>歡迎使用線上點餐系統</h1>
+    <form method="POST" action="/">
         {% for item in menu %}
-        <div class="menu-item">
-            <img src="{{ url_for('static', filename='images/' + item.image) }}" alt="{{ item.name }}">
-            <h3>{{ item.name }}</h3>
-            <p>價格：{{ item.price }} 元</p>
-            <button onclick="addToCart('{{ item.name }}', {{ item.price }})">點餐</button>
-        </div>
+            <div style="margin-bottom: 10px;">
+                <img src="{{ url_for('static', filename='images/' + item.image) }}" alt="{{ item.name }}" width="100"><br>
+                <label>
+                    <input type="checkbox" name="item" value="{{ item.name }}">
+                    {{ item.name }} - {{ item.price }} 元
+                </label>
+            </div>
         {% endfor %}
-    </div>
+        <button type="submit">送出訂單</button>
+    </form>
 
-    <div id="cart">
-        <h2>🛒 購物車內容</h2>
-        <ul id="cart-list"></ul>
-        <p><strong>總金額：</strong><span id="total-price">0</span> 元</p>
-        <button onclick="clearCart()">清空購物車</button>
-    </div>
-
-    <div id="qrcode-box">
-        <h2>📱 顧客掃描點餐網址</h2>
-        <img src="{{ url_for('static', filename='qrcode.png') }}" alt="QRCode" width="200">
-        <p>掃描即可開啟點餐系統</p>
-    </div>
-
-    <script>
-        let cart = [];
-        let total = 0;
-
-        function addToCart(name, price) {
-            cart.push({ name, price });
-            total += price;
-            updateCart();
-        }
-
-        function updateCart() {
-            const list = document.getElementById('cart-list');
-            const totalPrice = document.getElementById('total-price');
-
-            list.innerHTML = '';
-            cart.forEach(item => {
-                const li = document.createElement('li');
-                li.textContent = `${item.name} - ${item.price} 元`;
-                list.appendChild(li);
-            });
-
-            totalPrice.textContent = total;
-        }
-
-        function clearCart() {
-            cart = [];
-            total = 0;
-            updateCart();
-        }
-    </script>
+    <hr>
+    <h3>掃描 QR Code 點餐</h3>
+    <img src="{{ url_for('static', filename='qrcode.png') }}" alt="QRCode" width="150">
 </body>
 </html>

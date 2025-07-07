@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+    <meta charset="UTF-8">
+    <title>顧客訂單後台</title>
+</head>
+<body>
+    <h1>目前收到的訂單</h1>
+    {% if all_orders %}
+        <ul>
+            {% for order in all_orders %}
+                <li>{{ order }}</li>
+            {% endfor %}
+        </ul>
+    {% else %}
+        <p>尚未有訂單。</p>
+    {% endif %}
+</body>
+</html>
