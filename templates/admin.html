@@ -21,33 +21,35 @@
         </form>
         <ul>
             {% for order in orders %}
-                <li style="margin-bottom: 20px; padding: 10px; border: 1px solid #ccc;">
-                    <strong>訂單編號：</strong> #{{ order.id }}<br>
-                    <strong>時間：</strong> {{ order.timestamp }}<br>
-                    <ul>
-                        {% for item in order["items"] %}
-                            <li>{{ item.name }} × {{ item.quantity }}（單價：${{ item.price }}）</li>
-                        {% endfor %}
-                    </ul>
-                    <strong>總金額：</strong> ${{ order.total }}<br>
-                    <strong>狀態：</strong>
-                    {% if order.completed %}
-                        ✅ 已完成
-                    {% else %}
-                        ⏳ 未完成
-                    {% endif %}
-                    <br><br>
+                {% if order["id"] is defined and order["items"] is defined %}
+                    <li style="margin-bottom: 20px; padding: 10px; border: 1px solid #ccc;">
+                        <strong>訂單編號：</strong> #{{ order["id"] }}<br>
+                        <strong>時間：</strong> {{ order["timestamp"] }}<br>
+                        <ul>
+                            {% for item in order["items"] %}
+                                <li>{{ item["name"] }} × {{ item["quantity"] }}（單價：${{ item["price"] }}）</li>
+                            {% endfor %}
+                        </ul>
+                        <strong>總金額：</strong> ${{ order["total"] }}<br>
+                        <strong>狀態：</strong>
+                        {% if order["completed"] %}
+                            ✅ 已完成
+                        {% else %}
+                            ⏳ 未完成
+                        {% endif %}
+                        <br><br>
 
-                    <form method="POST" action="/delete_order/{{ order.id }}" onsubmit="return confirmDelete();" style="display: inline;">
-                        <button type="submit">刪除此訂單</button>
-                    </form>
+                        <form method="POST" action="/delete_order/{{ order["id"] }}" onsubmit="return confirmDelete();" style="display: inline;">
+                            <button type="submit">刪除此訂單</button>
+                        </form>
 
-                    <form method="POST" action="/mark_completed/{{ order.id }}" style="display: inline;">
-                        <button type="submit" {% if order.completed %}disabled style="color: gray;"{% endif %}>
-                            標記為完成
-                        </button>
-                    </form>
-                </li>
+                        <form method="POST" action="/mark_completed/{{ order["id"] }}" style="display: inline;">
+                            <button type="submit" {% if order["completed"] %}disabled style="color: gray;"{% endif %}>
+                                標記為完成
+                            </button>
+                        </form>
+                    </li>
+                {% endif %}
             {% endfor %}
         </ul>
     {% else %}

@@ -14,13 +14,13 @@
         {% if completed_orders %}
             <ul>
                 {% for order in completed_orders %}
-                    {% if order.id is defined and order.items is defined %}
+                    {% if order["id"] is defined and order["items"] is defined %}
                         <li style="margin-bottom: 10px;">
-                            <strong>訂單編號：</strong> #{{ order.id }}<br>
-                            <strong>完成時間：</strong> {{ order.timestamp }}<br>
+                            <strong>訂單編號：</strong> #{{ order["id"] }}<br>
+                            <strong>完成時間：</strong> {{ order["timestamp"] }}<br>
                             <ul>
-                                {% for item in order.items %}
-                                    <li>{{ item.name }} × {{ item.quantity }}</li>
+                                {% for item in order["items"] %}
+                                    <li>{{ item["name"] }} × {{ item["quantity"] }}</li>
                                 {% endfor %}
                             </ul>
                         </li>
