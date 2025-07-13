@@ -41,6 +41,12 @@ def requires_auth(f):
 # 首頁（點餐）
 @app.route('/', methods=['GET'])
 def index():
+    # ✅ 保險措施：補齊訂單中的 id 和 completed 欄位（避免前台爆炸）
+    for idx, order in enumerate(orders):
+        if "id" not in order:
+            order["id"] = idx + 1
+        if "completed" not in order:
+            order["completed"] = False
     return render_template('index.html', menu=menu, orders=orders)
 
 # 提交訂單
@@ -59,9 +65,9 @@ def submit_order():
                 "quantity": quantity
             })
     if order_items:
-        new_id = len(orders) + 1  # ✅ 訂單編號
+        new_id = len(orders) + 1
         orders.append({
-            "id": new_id,  # ✅ 編號
+            "id": new_id,
             "items": order_items,
             "total": total,
             "timestamp": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
@@ -69,31 +75,31 @@ def submit_order():
         })
     return redirect(url_for('index'))
 
-# 後台頁面（需登入）
+# 後台頁面
 @app.route('/admin')
 @requires_auth
 def admin():
     return render_template('admin.html', orders=orders)
 
-# 標記訂單為完成
+# 標記為完成
 @app.route('/mark_completed/<int:order_id>', methods=['POST'])
 @requires_auth
 def mark_completed(order_id):
     for order in orders:
-        if order["id"] == order_id:
+        if order.get("id") == order_id:
             order["completed"] = True
             break
     return redirect(url_for('admin'))
 
-# 刪除單筆訂單
+# 刪除訂單
 @app.route('/delete_order/<int:order_id>', methods=['POST'])
 @requires_auth
 def delete_order(order_id):
     global orders
-    orders = [order for order in orders if order["id"] != order_id]
+    orders = [order for order in orders if order.get("id") != order_id]
     return redirect(url_for('admin'))
 
-# 清除全部訂單
+# 清除全部
 @app.route('/clear_orders', methods=['POST'])
 @requires_auth
 def clear_orders():

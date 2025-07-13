@@ -14,15 +14,17 @@
         {% if completed_orders %}
             <ul>
                 {% for order in completed_orders %}
-                    <li>
-                        <strong>訂單編號：</strong> #{{ order.id }}<br>
-                        <strong>完成時間：</strong> {{ order.timestamp }}<br>
-                        <ul>
-                            {% for item in order.items %}
-                                <li>{{ item.name }} × {{ item.quantity }}</li>
-                            {% endfor %}
-                        </ul>
-                    </li>
+                    {% if order.id is defined and order.items is defined %}
+                        <li style="margin-bottom: 10px;">
+                            <strong>訂單編號：</strong> #{{ order.id }}<br>
+                            <strong>完成時間：</strong> {{ order.timestamp }}<br>
+                            <ul>
+                                {% for item in order.items %}
+                                    <li>{{ item.name }} × {{ item.quantity }}</li>
+                                {% endfor %}
+                            </ul>
+                        </li>
+                    {% endif %}
                 {% endfor %}
             </ul>
         {% else %}
@@ -30,12 +32,12 @@
         {% endif %}
     </section>
 
-    <!-- 點餐表單 -->
+    <!-- ✅ 點餐表單 -->
     <form method="POST" action="/submit_order">
         {% for item in menu %}
-            <div style="margin-bottom: 20px;">
-                <img src="/static/images/{{ item.image }}" alt="{{ item.name }}" width="100">
-                <p>{{ item.name }} - ${{ item.price }}</p>
+            <div style="margin-bottom: 20px; padding: 10px; border: 1px solid #ccc;">
+                <img src="/static/images/{{ item.image }}" alt="{{ item.name }}" width="100"><br>
+                <strong>{{ item.name }} - ${{ item.price }}</strong><br>
                 <label>數量：
                     <input type="number" name="quantity_{{ item.name }}" value="0" min="0">
                 </label>
