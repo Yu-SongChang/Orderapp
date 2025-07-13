@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+    <meta charset="UTF-8">
+    <title>訂單狀態</title>
+    <meta http-equiv="refresh" content="10"> <!-- 每10秒刷新 -->
+    <style>
+        body {
+            font-family: "微軟正黑體", sans-serif;
+            padding: 30px;
+            background-color: #f9f9f9;
+            line-height: 1.6;
+        }
+        h1 {
+            color: #333;
+        }
+        ul {
+            list-style: none;
+            padding: 0;
+        }
+        li {
+            margin: 8px 0;
+        }
+    </style>
+</head>
+<body>
+    <h1>📋 訂單狀態</h1>
+    <p><strong>訂單編號：</strong> #{{ order.id }}</p>
+
+    <ul>
+        {% for item in order["items"] %}
+            <li>
+                {{ item.name }} × {{ item.quantity }}
+                {% if item.done %}
+                    ✅ 已出餐
+                {% else %}
+                    ⏳ 準備中
+                {% endif %}
+            </li>
+        {% endfor %}
+    </ul>
+
+    <p>
+        <strong>整體狀態：</strong>
+        {% if order.completed %}
+            ✅ 訂單已完成，請至櫃檯領取。
+        {% else %}
+            ⏳ 餐點準備中，請稍候...
+        {% endif %}
+    </p>
+</body>
+</html>

@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <title>訂單管理</title>
-    <meta http-equiv="refresh" content="10">  <!-- ✅ 自動每10秒刷新 -->
+    <meta http-equiv="refresh" content="10"> <!-- 每10秒自動刷新 -->
     <script>
         function confirmClear() {
             return confirm('確定要清除所有訂單嗎？');
@@ -16,8 +16,8 @@
 <body>
     <h1>後台訂單管理</h1>
 
-    <!-- ✅ 今日營業額 -->
-    <h3>📊 今日總營業額：${{ today_total }}</h3>
+    <!-- 加總今日營業額 -->
+    <h2>💰 今日總營業額： ${{ today_total }}</h2>
 
     {% if orders %}
         <form method="POST" action="/clear_orders" onsubmit="return confirmClear();">
@@ -25,35 +25,40 @@
         </form>
         <ul>
             {% for order in orders %}
-                {% if order["id"] is defined and order["items"] is defined %}
-                    <li style="margin-bottom: 20px; padding: 10px; border: 1px solid #ccc;">
-                        <strong>訂單編號：</strong> #{{ order["id"] }}<br>
-                        <strong>時間：</strong> {{ order["timestamp"] }}<br>
-                        <ul>
-                            {% for item in order["items"] %}
-                                <li>{{ item["name"] }} × {{ item["quantity"] }}（單價：${{ item["price"] }}）</li>
-                            {% endfor %}
-                        </ul>
-                        <strong>總金額：</strong> ${{ order["total"] }}<br>
-                        <strong>狀態：</strong>
-                        {% if order["completed"] %}
-                            ✅ 已完成
-                        {% else %}
-                            ⏳ 未完成
-                        {% endif %}
-                        <br><br>
-
-                        <form method="POST" action="/delete_order/{{ order["id"] }}" onsubmit="return confirmDelete();" style="display: inline;">
-                            <button type="submit">刪除此訂單</button>
+                <li style="margin-bottom: 20px; padding: 10px; border: 1px solid #ccc;">
+                    <strong>訂單編號：</strong> #{{ order["id"] }}<br>
+                    <strong>時間：</strong> {{ order["timestamp"] }}<br>
+                    <ul>
+                        {% for item in order["items"] %}
+                            <li>
+                                {{ item["name"] }} × {{ item["quantity"] }}
+                                {% if item["done"] %}
+                                    ✅
+                                {% else %}
+                                    ⏳
+                                    <form method="POST" action="/mark_item_done/{{ order['id'] }}/{{ loop.index0 }}" style="display: inline;">
+                                        <button type="submit">出餐完成</button>
+                                    </form>
+                                {% endif %}
+                            </li>
+                        {% endfor %}
+                    </ul>
+                    <strong>總金額：</strong> ${{ order["total"] }}<br>
+                    <strong>整體狀態：</strong>
+                    {% if order["completed"] %}
+                        ✅ 訂單完成
+                    {% else %}
+                        ⏳ 製作中
+                        <form method="POST" action="/mark_completed/{{ order['id'] }}" style="display: inline;">
+                            <button type="submit">標記整筆為完成</button>
                         </form>
+                    {% endif %}
+                    <br><br>
 
-                        <form method="POST" action="/mark_completed/{{ order["id"] }}" style="display: inline;">
-                            <button type="submit" {% if order["completed"] %}disabled style="color: gray;"{% endif %}>
-                                標記為完成
-                            </button>
-                        </form>
-                    </li>
-                {% endif %}
+                    <form method="POST" action="/delete_order/{{ order['id'] }}" onsubmit="return confirmDelete();" style="display: inline;">
+                        <button type="submit">刪除此訂單</button>
+                    </form>
+                </li>
             {% endfor %}
         </ul>
     {% else %}
