@@ -66,7 +66,7 @@ def submit_order():
         return redirect(url_for('success', order_id=new_id))
     return redirect(url_for('index'))
 
-# 成功頁面（訂單編號回饋）
+# 成功頁面（回饋顧客訂單編號，並將其儲存到 localStorage）
 @app.route('/success')
 def success():
     order_id = request.args.get('order_id', type=int)
@@ -75,7 +75,7 @@ def success():
         return redirect(url_for('index'))
     return render_template('success.html', order=order)
 
-# 訂單狀態頁面（自動跳轉顧客查詢）
+# 訂單狀態查詢
 @app.route('/order_status')
 def order_status():
     order_id = request.args.get('order_id', type=int)
@@ -84,7 +84,7 @@ def order_status():
         return redirect(url_for('index'))
     return render_template('order_status.html', order=order)
 
-# 後台管理
+# 後台頁面
 @app.route('/admin')
 @requires_auth
 def admin():
@@ -93,7 +93,7 @@ def admin():
     today_total = sum(o["total"] for o in today_orders)
     return render_template('admin.html', orders=orders, today_total=today_total)
 
-# 單筆訂單完成
+# 標記整筆訂單完成
 @app.route('/mark_completed/<int:order_id>', methods=['POST'])
 @requires_auth
 def mark_completed(order_id):
@@ -105,7 +105,7 @@ def mark_completed(order_id):
             break
     return redirect(url_for('admin'))
 
-# 單一品項完成
+# 單一品項出餐
 @app.route('/mark_item_done/<int:order_id>/<int:item_index>', methods=['POST'])
 @requires_auth
 def mark_item_done(order_id, item_index):
@@ -118,7 +118,7 @@ def mark_item_done(order_id, item_index):
             break
     return redirect(url_for('admin'))
 
-# 刪除訂單
+# 刪除單筆訂單
 @app.route('/delete_order/<int:order_id>', methods=['POST'])
 @requires_auth
 def delete_order(order_id):
@@ -133,7 +133,7 @@ def clear_orders():
     orders.clear()
     return redirect(url_for('admin'))
 
-# 啟動應用
+# 啟動伺服器
 if __name__ == '__main__':
     port = int(os.environ.get("PORT", 10000))
     app.run(host='0.0.0.0', port=port)

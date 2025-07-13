@@ -8,11 +8,12 @@
         body {
             font-family: "微軟正黑體", sans-serif;
             padding: 30px;
-            background-color: #f9f9f9;
-            line-height: 1.6;
+            background-color: #f4f8fc;
+            line-height: 1.8;
+            color: #333;
         }
         h1 {
-            color: #333;
+            color: #2c3e50;
         }
         ul {
             list-style: none;
@@ -20,6 +21,14 @@
         }
         li {
             margin: 8px 0;
+            padding: 6px 12px;
+            background-color: #ffffff;
+            border-radius: 6px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }
+        .status {
+            font-weight: bold;
+            margin-top: 20px;
         }
     </style>
 </head>
@@ -30,8 +39,8 @@
     <ul>
         {% for item in order["items"] %}
             <li>
-                {{ item.name }} × {{ item.quantity }}
-                {% if item.done %}
+                {{ item["name"] }} × {{ item["quantity"] }}
+                {% if item["done"] %}
                     ✅ 已出餐
                 {% else %}
                     ⏳ 準備中
@@ -40,7 +49,7 @@
         {% endfor %}
     </ul>
 
-    <p>
+    <p class="status">
         <strong>整體狀態：</strong>
         {% if order.completed %}
             ✅ 訂單已完成，請至櫃檯領取。

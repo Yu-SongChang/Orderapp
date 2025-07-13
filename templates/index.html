@@ -3,22 +3,40 @@
 <head>
     <meta charset="UTF-8">
     <title>線上點餐</title>
-    <script>
-        window.onload = function () {
-            const lastOrderId = localStorage.getItem("lastOrderId");
-            if (lastOrderId) {
-                const check = confirm("是否要查看您上一筆訂單的狀態？");
-                if (check) {
-                    window.location.href = "/success?order_id=" + lastOrderId;
-                }
-            }
+    <style>
+        body {
+            font-family: "微軟正黑體", sans-serif;
+            padding: 30px;
+            background-color: #f8f8f8;
         }
+        h1 {
+            color: #2c3e50;
+        }
+        button {
+            margin: 10px 5px;
+        }
+        img {
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            padding: 5px;
+        }
+    </style>
+    <script>
         function checkMyOrder() {
             const lastOrderId = localStorage.getItem("lastOrderId");
             if (lastOrderId) {
-                window.location.href = "/success?order_id=" + lastOrderId;
+                window.location.href = "/order_status?order_id=" + lastOrderId;
             } else {
                 alert("您尚未有訂單紀錄！");
+            }
+        }
+
+        function inputOrderId() {
+            const orderId = prompt("請輸入您的訂單編號（例如：1）");
+            if (orderId && !isNaN(orderId)) {
+                window.location.href = "/order_status?order_id=" + orderId;
+            } else if (orderId !== null) {
+                alert("請輸入正確的訂單編號！");
             }
         }
     </script>
@@ -26,7 +44,10 @@
 <body>
     <h1>和琴創意食堂</h1>
 
-    <button onclick="checkMyOrder()">查看我的訂單狀態</button>
+
+    <button onclick="inputOrderId()">🔎 手動輸入訂單編號查詢</button>
+
+    <hr>
 
     <form method="POST" action="/submit_order">
         {% for item in menu %}
