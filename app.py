@@ -1,7 +1,7 @@
 from flask import Flask, render_template, request, redirect, url_for, Response
 from datetime import datetime
 from functools import wraps
-import base64
+import os
 
 app = Flask(__name__)
 
@@ -20,7 +20,6 @@ menu = [
 orders = []
 
 # 權限驗證
-
 def check_auth(username, password):
     return username == USERNAME and password == PASSWORD
 
@@ -42,7 +41,7 @@ def requires_auth(f):
 # 首頁（點餐）
 @app.route('/', methods=['GET'])
 def index():
-    return render_template('index.html', menu=menu)
+    return render_template('index.html', menu=menu, orders=orders)
 
 # 提交訂單
 @app.route('/submit_order', methods=['POST'])
@@ -60,10 +59,13 @@ def submit_order():
                 "quantity": quantity
             })
     if order_items:
+        new_id = len(orders) + 1  # ✅ 訂單編號
         orders.append({
+            "id": new_id,  # ✅ 編號
             "items": order_items,
             "total": total,
-            "timestamp": datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+            "timestamp": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
+            "completed": False
         })
     return redirect(url_for('index'))
 
@@ -73,12 +75,22 @@ def submit_order():
 def admin():
     return render_template('admin.html', orders=orders)
 
+# 標記訂單為完成
+@app.route('/mark_completed/<int:order_id>', methods=['POST'])
+@requires_auth
+def mark_completed(order_id):
+    for order in orders:
+        if order["id"] == order_id:
+            order["completed"] = True
+            break
+    return redirect(url_for('admin'))
+
 # 刪除單筆訂單
 @app.route('/delete_order/<int:order_id>', methods=['POST'])
 @requires_auth
 def delete_order(order_id):
-    if 0 <= order_id < len(orders):
-        del orders[order_id]
+    global orders
+    orders = [order for order in orders if order["id"] != order_id]
     return redirect(url_for('admin'))
 
 # 清除全部訂單
@@ -87,8 +99,6 @@ def delete_order(order_id):
 def clear_orders():
     orders.clear()
     return redirect(url_for('admin'))
-
-import os
 
 if __name__ == '__main__':
     port = int(os.environ.get("PORT", 10000))
