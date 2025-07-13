@@ -3,6 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <title>訂單管理</title>
+    <meta http-equiv="refresh" content="10">  <!-- ✅ 自動每10秒刷新 -->
     <script>
         function confirmClear() {
             return confirm('確定要清除所有訂單嗎？');
@@ -14,6 +15,9 @@
 </head>
 <body>
     <h1>後台訂單管理</h1>
+
+    <!-- ✅ 今日營業額 -->
+    <h3>📊 今日總營業額：${{ today_total }}</h3>
 
     {% if orders %}
         <form method="POST" action="/clear_orders" onsubmit="return confirmClear();">

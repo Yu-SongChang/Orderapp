@@ -7,7 +7,7 @@
 <body>
     <h1>和琴創意食堂</h1>
 
-    <!-- ✅ 完成訂單通知區塊 -->
+    <!-- ✅ 完成訂單通知 -->
     <section style="background-color: #e8ffe8; padding: 10px; border: 1px solid #aaa; margin-bottom: 20px;">
         <h2>📢 取餐通知</h2>
         {% set completed_orders = orders | selectattr('completed', 'equalto', True) | list %}
@@ -15,7 +15,7 @@
             <ul>
                 {% for order in completed_orders %}
                     {% if order["id"] is defined and order["items"] is defined %}
-                        <li style="margin-bottom: 10px;">
+                        <li>
                             <strong>訂單編號：</strong> #{{ order["id"] }}<br>
                             <strong>完成時間：</strong> {{ order["timestamp"] }}<br>
                             <ul>
@@ -32,7 +32,7 @@
         {% endif %}
     </section>
 
-    <!-- ✅ 點餐表單 -->
+    <!-- 點餐表單 -->
     <form method="POST" action="/submit_order">
         {% for item in menu %}
             <div style="margin-bottom: 20px; padding: 10px; border: 1px solid #ccc;">

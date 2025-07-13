@@ -5,21 +5,17 @@ import os
 
 app = Flask(__name__)
 
-# 帳號密碼設定
 USERNAME = 'admin'
 PASSWORD = '1234'
 
-# 餐點資料
 menu = [
     {"name": "漢堡", "price": 80, "image": "burger.jpg"},
     {"name": "炸雞", "price": 100, "image": "chicken.jpg"},
     {"name": "珍奶", "price": 60, "image": "milktea.jpg"}
 ]
 
-# 訂單紀錄
 orders = []
 
-# 權限驗證
 def check_auth(username, password):
     return username == USERNAME and password == PASSWORD
 
@@ -38,10 +34,9 @@ def requires_auth(f):
         return f(*args, **kwargs)
     return decorated
 
-# 首頁（點餐）
-@app.route('/', methods=['GET'])
+@app.route('/')
 def index():
-    # ✅ 保險措施：補齊訂單中的 id 和 completed 欄位（避免前台爆炸）
+    # 補齊欄位（防爆）
     for idx, order in enumerate(orders):
         if "id" not in order:
             order["id"] = idx + 1
@@ -49,7 +44,6 @@ def index():
             order["completed"] = False
     return render_template('index.html', menu=menu, orders=orders)
 
-# 提交訂單
 @app.route('/submit_order', methods=['POST'])
 def submit_order():
     order_items = []
@@ -75,13 +69,13 @@ def submit_order():
         })
     return redirect(url_for('index'))
 
-# 後台頁面
 @app.route('/admin')
 @requires_auth
 def admin():
-    return render_template('admin.html', orders=orders)
+    today = datetime.now().strftime("%Y-%m-%d")
+    today_total = sum(order["total"] for order in orders if order["timestamp"].startswith(today))
+    return render_template('admin.html', orders=orders, today_total=today_total)
 
-# 標記為完成
 @app.route('/mark_completed/<int:order_id>', methods=['POST'])
 @requires_auth
 def mark_completed(order_id):
@@ -91,7 +85,6 @@ def mark_completed(order_id):
             break
     return redirect(url_for('admin'))
 
-# 刪除訂單
 @app.route('/delete_order/<int:order_id>', methods=['POST'])
 @requires_auth
 def delete_order(order_id):
@@ -99,7 +92,6 @@ def delete_order(order_id):
     orders = [order for order in orders if order.get("id") != order_id]
     return redirect(url_for('admin'))
 
-# 清除全部
 @app.route('/clear_orders', methods=['POST'])
 @requires_auth
 def clear_orders():
