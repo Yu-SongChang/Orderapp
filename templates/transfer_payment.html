@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+    <meta charset="UTF-8">
+    <title>Line Pay 付款提醒</title>
+    <style>
+        body { font-family: "微軟正黑體", sans-serif; padding: 40px; text-align: center; background-color: #f9f9f9; }
+        h1 { color: #4CAF50; }
+        img { max-width: 220px; margin: 20px 0; border: 1px solid #ccc; padding: 8px; border-radius: 8px; }
+        .note { margin-top: 30px; color: #777; }
+    </style>
+</head>
+<body>
+    <h1>📢 請使用 Line Pay 轉帳</h1>
+    <p>訂單編號：#{{ order.id }}</p>
+    <p>應付金額：<strong>${{ order.total }}</strong></p>
+    <img src="/static/images/linepay.png" alt="Line Pay QR Code">
+    <p class="note">完成轉帳後請至櫃檯出示畫面或告知訂單編號。</p>
+    <p><a href="/order_status?order_id={{ order.id }}">📄 查詢訂單狀態</a>｜<a href="/">🏠 回首頁</a></p>
+</body>
+</html>

@@ -10,9 +10,9 @@ PASSWORD = '1234'
 
 # 餐點資料
 menu = [
-    {"name": "漢堡", "price": 80, "image": "burger.jpg"},
-    {"name": "炸雞", "price": 100, "image": "chicken.jpg"},
-    {"name": "珍奶", "price": 60, "image": "milktea.jpg"}
+    {"name": "漢堡", "price": 80, "image": "漢堡.jpg"},
+    {"name": "炸雞", "price": 100, "image": "炸雞.jpg"},
+    {"name": "珍奶", "price": 60, "image": "珍奶.jpg"}
 ]
 
 orders = []
@@ -33,12 +33,10 @@ def requires_auth(f):
         return f(*args, **kwargs)
     return decorated
 
-# 首頁
 @app.route('/')
 def index():
     return render_template('index.html', menu=menu)
 
-# 提交訂單
 @app.route('/submit_order', methods=['POST'])
 def submit_order():
     order_items = []
@@ -56,17 +54,24 @@ def submit_order():
             })
     if order_items:
         new_id = len(orders) + 1
-        orders.append({
+        new_order = {
             "id": new_id,
             "items": order_items,
             "total": total,
             "timestamp": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
             "completed": False
-        })
-        return redirect(url_for('success', order_id=new_id))
+        }
+        orders.append(new_order)
+        return redirect(url_for('transfer_payment', order_id=new_id))
     return redirect(url_for('index'))
 
-# 成功頁面（回饋顧客訂單編號，並將其儲存到 localStorage）
+@app.route('/transfer_payment/<int:order_id>')
+def transfer_payment(order_id):
+    order = next((o for o in orders if o["id"] == order_id), None)
+    if not order:
+        return redirect(url_for('index'))
+    return render_template('transfer_payment.html', order=order)
+
 @app.route('/success')
 def success():
     order_id = request.args.get('order_id', type=int)
@@ -75,7 +80,6 @@ def success():
         return redirect(url_for('index'))
     return render_template('success.html', order=order)
 
-# 訂單狀態查詢
 @app.route('/order_status')
 def order_status():
     order_id = request.args.get('order_id', type=int)
@@ -84,7 +88,6 @@ def order_status():
         return redirect(url_for('index'))
     return render_template('order_status.html', order=order)
 
-# 後台頁面
 @app.route('/admin')
 @requires_auth
 def admin():
@@ -93,7 +96,6 @@ def admin():
     today_total = sum(o["total"] for o in today_orders)
     return render_template('admin.html', orders=orders, today_total=today_total)
 
-# 標記整筆訂單完成
 @app.route('/mark_completed/<int:order_id>', methods=['POST'])
 @requires_auth
 def mark_completed(order_id):
@@ -105,7 +107,6 @@ def mark_completed(order_id):
             break
     return redirect(url_for('admin'))
 
-# 單一品項出餐
 @app.route('/mark_item_done/<int:order_id>/<int:item_index>', methods=['POST'])
 @requires_auth
 def mark_item_done(order_id, item_index):
@@ -118,7 +119,6 @@ def mark_item_done(order_id, item_index):
             break
     return redirect(url_for('admin'))
 
-# 刪除單筆訂單
 @app.route('/delete_order/<int:order_id>', methods=['POST'])
 @requires_auth
 def delete_order(order_id):
@@ -126,14 +126,12 @@ def delete_order(order_id):
     orders = [o for o in orders if o["id"] != order_id]
     return redirect(url_for('admin'))
 
-# 清除所有訂單
 @app.route('/clear_orders', methods=['POST'])
 @requires_auth
 def clear_orders():
     orders.clear()
     return redirect(url_for('admin'))
 
-# 啟動伺服器
 if __name__ == '__main__':
     port = int(os.environ.get("PORT", 10000))
     app.run(host='0.0.0.0', port=port)

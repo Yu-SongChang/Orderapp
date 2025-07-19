@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <title>訂單送出成功</title>
-    <meta http-equiv="refresh" content="10;url=/order_status?order_id={{ order.id }}">
+    <meta http-equiv="refresh" content="5;url=/order_status?order_id={{ order.id }}">
     <style>
         body {
             font-family: "微軟正黑體", sans-serif;
@@ -36,7 +36,7 @@
     <p class="info">📌 您的訂單編號為：<strong>#{{ order.id }}</strong></p>
     <p class="info">🕒 下單時間：{{ order.timestamp }}</p>
 
-    <p class="note">系統將在 <strong>10 秒</strong> 後自動導向訂單狀態頁面。</p>
-    <p class="note">若未自動跳轉，請 <a href="/order_status?order_id={{ order.id }}">點此查詢訂單狀態</a></p>
+    <p class="note">系統將於 <strong>5 秒後</strong> 自動導向訂單狀態頁面。</p>
+    <p class="note">若未跳轉，請 <a href="/order_status?order_id={{ order.id }}">點此查詢訂單狀態</a></p>
 </body>
 </html>

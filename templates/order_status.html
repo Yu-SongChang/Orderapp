@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <title>訂單狀態</title>
-    <meta http-equiv="refresh" content="10"> <!-- 每10秒刷新 -->
+    <meta http-equiv="refresh" content="10">
     <style>
         body {
             font-family: "微軟正黑體", sans-serif;
@@ -30,7 +30,35 @@
             font-weight: bold;
             margin-top: 20px;
         }
+        .actions {
+            margin-top: 30px;
+        }
+        .countdown {
+            font-size: 14px;
+            color: #777;
+            margin-top: 10px;
+        }
+        a {
+            margin: 0 10px;
+            color: #0077cc;
+            text-decoration: none;
+        }
+        a:hover {
+            text-decoration: underline;
+        }
     </style>
+    <script>
+        let seconds = 10;
+        function startCountdown() {
+            const countdownElement = document.getElementById("countdown");
+            const interval = setInterval(() => {
+                seconds--;
+                countdownElement.textContent = `🔄 本頁將於 ${seconds} 秒後自動刷新`;
+                if (seconds <= 0) clearInterval(interval);
+            }, 1000);
+        }
+        window.onload = startCountdown;
+    </script>
 </head>
 <body>
     <h1>📋 訂單狀態</h1>
@@ -49,6 +77,8 @@
         {% endfor %}
     </ul>
 
+    <p><strong>總金額：</strong> ${{ order.total }}</p>
+
     <p class="status">
         <strong>整體狀態：</strong>
         {% if order.completed %}
@@ -57,5 +87,13 @@
             ⏳ 餐點準備中，請稍候...
         {% endif %}
     </p>
+
+    <p id="countdown" class="countdown">🔄 本頁將於 10 秒後自動刷新</p>
+
+    <div class="actions">
+        <a href="/">🏠 回首頁</a>
+        |
+        <a href="" onclick="location.reload(); return false;">🔁 手動刷新</a>
+    </div>
 </body>
 </html>
