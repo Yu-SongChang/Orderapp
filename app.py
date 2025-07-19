@@ -10,9 +10,19 @@ PASSWORD = '1234'
 
 # 餐點資料
 menu = [
-    {"name": "漢堡", "price": 80, "image": "burger.jpg"},
-    {"name": "炸雞", "price": 100, "image": "chicken.jpg"},
-    {"name": "珍奶", "price": 60, "image": "milktea.jpg"}
+    {"name": "咖哩雞排飯", "price": 130, "image": "咖哩雞排飯.jpg", "category": "咖哩飯類"},
+    {"name": "咖哩豬排飯", "price": 125, "image": "咖哩豬排飯.jpg", "category": "咖哩飯類"},
+
+    {"name": "咖啡", "price": 50, "image": "咖啡.jpg", "category": "飲料類"},
+    {"name": "拉花咖啡", "price": 65, "image": "拉花咖啡.jpg", "category": "飲料類"},
+    {"name": "普洱茶", "price": 45, "image": "普洱茶.jpg", "category": "飲料類"},
+    {"name": "紅烏龍茶", "price": 45, "image": "紅烏龍茶.jpg", "category": "飲料類"},
+
+    {"name": "青醬義大利麵", "price": 110, "image": "青醬義大利麵.jpg", "category": "義大利麵類"},
+    {"name": "紅醬義大利麵", "price": 115, "image": "紅醬義大利麵.jpg", "category": "義大利麵類"},
+
+    {"name": "海鮮pizza", "price": 150, "image": "海鮮pizza.jpg", "category": "Pizza類"},
+    {"name": "總匯pizza", "price": 160, "image": "總匯pizza.jpg", "category": "Pizza類"}
 ]
 
 orders = []

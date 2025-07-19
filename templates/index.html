@@ -12,23 +12,54 @@
         h1 {
             color: #2c3e50;
         }
-        button {
-            margin: 10px 5px;
+        .category-wrapper {
+            margin-bottom: 20px;
+        }
+        .category-btn {
+            margin: 5px 0;
+            padding: 8px 16px;
+            border: none;
+            border-radius: 6px;
+            background-color: #3498db;
+            color: white;
+            cursor: pointer;
+            display: block;
+            width: 150px;
+            text-align: center;
+        }
+        .category-btn:hover {
+            background-color: #2980b9;
         }
         img {
             border: 1px solid #ddd;
             border-radius: 8px;
             padding: 5px;
         }
+        .category-section {
+            display: none;
+            margin-top: 10px;
+            margin-left: 20px;
+        }
+        .category-section.active {
+            display: block;
+        }
+        .product {
+            margin-bottom: 20px;
+        }
+        .toggle-btn {
+            margin: 15px 0;
+            background-color: #95a5a6;
+        }
     </style>
     <script>
-        function checkMyOrder() {
-            const lastOrderId = localStorage.getItem("lastOrderId");
-            if (lastOrderId) {
-                window.location.href = "/order_status?order_id=" + lastOrderId;
-            } else {
-                alert("您尚未有訂單紀錄！");
-            }
+        function toggleCategory(categoryId) {
+            const section = document.getElementById(categoryId);
+            section.classList.toggle('active');
+        }
+
+        function toggleAll(expand) {
+            const sections = document.querySelectorAll('.category-section');
+            sections.forEach(sec => sec.classList.toggle('active', expand));
         }
 
         function inputOrderId() {
@@ -44,21 +75,68 @@
 <body>
     <h1>和琴創意食堂</h1>
 
-
-    <button onclick="inputOrderId()">🔎 手動輸入訂單編號查詢</button>
+    <button onclick="inputOrderId()">🔍 手動輸入訂單編號查詢</button>
 
     <hr>
 
+    <button class="toggle-btn" onclick="toggleAll(true)">全部展開</button>
+    <button class="toggle-btn" onclick="toggleAll(false)">全部收合</button>
+
     <form method="POST" action="/submit_order">
-        {% for item in menu %}
-            <div style="margin-bottom: 20px;">
-                <img src="/static/images/{{ item.image }}" alt="{{ item.name }}" width="100">
-                <p>{{ item.name }} - ${{ item.price }}</p>
-                <label>數量：
-                    <input type="number" name="quantity_{{ item.name }}" value="0" min="0">
-                </label>
+        <div class="category-wrapper">
+            <button type="button" class="category-btn" onclick="toggleCategory('pasta')">義大利麵</button>
+            <div id="pasta" class="category-section">
+                {% for item in menu if item.category == "義大利麵類" %}
+                <div class="product">
+                    <img src="/static/images/{{ item.image }}" alt="{{ item.name }}" width="100">
+                    <p>{{ item.name }} - ${{ item.price }}</p>
+                    <label>數量：
+                        <input type="number" name="quantity_{{ item.name }}" value="0" min="0">
+                    </label>
+                </div>
+                {% endfor %}
             </div>
-        {% endfor %}
+
+            <button type="button" class="category-btn" onclick="toggleCategory('pizza')">Pizza</button>
+            <div id="pizza" class="category-section">
+                {% for item in menu if item.category == "Pizza類" %}
+                <div class="product">
+                    <img src="/static/images/{{ item.image }}" alt="{{ item.name }}" width="100">
+                    <p>{{ item.name }} - ${{ item.price }}</p>
+                    <label>數量：
+                        <input type="number" name="quantity_{{ item.name }}" value="0" min="0">
+                    </label>
+                </div>
+                {% endfor %}
+            </div>
+
+            <button type="button" class="category-btn" onclick="toggleCategory('curry')">咖喱飯</button>
+            <div id="curry" class="category-section">
+                {% for item in menu if item.category == "咖哩飯類" %}
+                <div class="product">
+                    <img src="/static/images/{{ item.image }}" alt="{{ item.name }}" width="100">
+                    <p>{{ item.name }} - ${{ item.price }}</p>
+                    <label>數量：
+                        <input type="number" name="quantity_{{ item.name }}" value="0" min="0">
+                    </label>
+                </div>
+                {% endfor %}
+            </div>
+
+            <button type="button" class="category-btn" onclick="toggleCategory('drink')">飲料</button>
+            <div id="drink" class="category-section">
+                {% for item in menu if item.category == "飲料類" %}
+                <div class="product">
+                    <img src="/static/images/{{ item.image }}" alt="{{ item.name }}" width="100">
+                    <p>{{ item.name }} - ${{ item.price }}</p>
+                    <label>數量：
+                        <input type="number" name="quantity_{{ item.name }}" value="0" min="0">
+                    </label>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+
         <button type="submit">送出訂單</button>
     </form>
 </body>
