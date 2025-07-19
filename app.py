@@ -62,8 +62,15 @@ def submit_order():
             "completed": False
         }
         orders.append(new_order)
-        return redirect(url_for('transfer_payment', order_id=new_id))
+        return redirect(url_for('choose_payment', order_id=new_id))
     return redirect(url_for('index'))
+
+@app.route('/choose_payment/<int:order_id>')
+def choose_payment(order_id):
+    order = next((o for o in orders if o["id"] == order_id), None)
+    if not order:
+        return redirect(url_for('index'))
+    return render_template('choose_payment.html', order=order)
 
 @app.route('/transfer_payment/<int:order_id>')
 def transfer_payment(order_id):
@@ -71,6 +78,13 @@ def transfer_payment(order_id):
     if not order:
         return redirect(url_for('index'))
     return render_template('transfer_payment.html', order=order)
+
+@app.route('/bank_transfer/<int:order_id>')
+def bank_transfer(order_id):
+    order = next((o for o in orders if o["id"] == order_id), None)
+    if not order:
+        return redirect(url_for('index'))
+    return render_template('bank_transfer.html', order=order)
 
 @app.route('/success')
 def success():

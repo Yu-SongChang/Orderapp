@@ -2,7 +2,7 @@
 <html lang="zh-Hant">
 <head>
     <meta charset="UTF-8">
-    <title>Line Pay 付款提醒</title>
+    <title>銀行轉帳提醒</title>
     <style>
         body {
             font-family: "微軟正黑體", sans-serif;
@@ -13,12 +13,15 @@
         h1 {
             color: #4CAF50;
         }
-        img {
-            max-width: 220px;
+        .info {
+            font-size: 18px;
             margin: 20px 0;
-            border: 1px solid #ccc;
-            padding: 8px;
-            border-radius: 8px;
+        }
+        .bank {
+            font-size: 20px;
+            font-weight: bold;
+            margin: 30px 0;
+            color: #2c3e50;
         }
         .note {
             margin-top: 30px;
@@ -34,13 +37,16 @@
     </style>
 </head>
 <body>
-    <h1>📢 請使用 Line Pay 轉帳</h1>
-    <p>訂單編號：#{{ order.id }}</p>
-    <p>應付金額：<strong>${{ order.total }}</strong></p>
+    <h1>🏦 銀行匯款資訊</h1>
+    <p class="info">📌 訂單編號：#{{ order.id }}</p>
+    <p class="info">💰 應付金額：<strong>${{ order.total }}</strong></p>
 
-    <img src="/static/images/linepay.png" alt="Line Pay QR Code">
+    <div class="bank">
+        📢 請轉帳至：玉山銀行<br>
+        帳號：<strong>123456789</strong>
+    </div>
 
-    <p class="note">付款完成後，請至櫃檯出示付款畫面或告知訂單編號。</p>
+    <p class="note">匯款完成後請至櫃檯出示帳號末五碼或告知訂單編號。</p>
 
     <p>
         <a href="/order_status?order_id={{ order.id }}">📄 查詢訂單狀態</a>｜

@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+    <meta charset="UTF-8">
+    <title>選擇付款方式</title>
+    <style>
+        body {
+            font-family: "微軟正黑體", sans-serif;
+            padding: 40px;
+            text-align: center;
+            background-color: #f0f8ff;
+        }
+        h1 {
+            color: #2c3e50;
+        }
+        .option {
+            margin: 30px 0;
+        }
+        .btn {
+            display: inline-block;
+            margin: 10px;
+            padding: 12px 24px;
+            font-size: 16px;
+            background-color: #4CAF50;
+            color: white;
+            text-decoration: none;
+            border-radius: 6px;
+        }
+        .btn:hover {
+            background-color: #45a049;
+        }
+    </style>
+</head>
+<body>
+    <h1>請選擇您的付款方式</h1>
+    <p>訂單編號：#{{ order.id }}</p>
+    <p>應付金額：<strong>${{ order.total }}</strong></p>
+
+    <div class="option">
+        <a href="/transfer_payment/{{ order.id }}" class="btn">
+    <img src="/static/images/line_logo.png" alt="Line" style="height: 20px; vertical-align: middle; margin-right: 8px;">
+    使用 Line Pay 付款
+</a>
+
+        <a href="/bank_transfer/{{ order.id }}" class="btn">🏦 銀行帳戶匯款</a>
+    </div>
+</body>
+</html>
