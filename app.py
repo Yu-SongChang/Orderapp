@@ -10,9 +10,9 @@ PASSWORD = '1234'
 
 # 餐點資料
 menu = [
-    {"name": "漢堡", "price": 80, "image": "漢堡.jpg"},
-    {"name": "炸雞", "price": 100, "image": "炸雞.jpg"},
-    {"name": "珍奶", "price": 60, "image": "珍奶.jpg"}
+    {"name": "漢堡", "price": 80, "image": "burger.jpg"},
+    {"name": "炸雞", "price": 100, "image": "chicken.jpg"},
+    {"name": "珍奶", "price": 60, "image": "milktea.jpg"}
 ]
 
 orders = []
