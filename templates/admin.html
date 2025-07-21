@@ -29,6 +29,11 @@
         button {
             margin-left: 5px;
         }
+        .drink-detail {
+            margin-left: 10px;
+            color: #555;
+            font-size: 0.95em;
+        }
     </style>
     <script>
         function confirmClear() {
@@ -60,8 +65,15 @@
                         {% for item in order["items"] %}
                             <li>
                                 {{ item.name }} × {{ item.quantity }}
-                                {% if item.drink %}
-                                    <br>➡️ 飲料：{{ item.drink.name }}（${{ item.drink.price }}{% if item.drink.price > 30 %}，補{{ item.drink.price - 30 }}元{% endif %}）
+                                {% if item.drinks %}
+                                    <div class="drink-detail">
+                                        附餐飲料：
+                                        <ul>
+                                            {% for d in item.drinks %}
+                                            <li>{{ d.name }}（${{ d.price }}{% if d.price > 30 %}，補{{ d.price - 30 }}元{% endif %}）</li>
+                                            {% endfor %}
+                                        </ul>
+                                    </div>
                                 {% endif %}
                                 {% if item.done %}
                                     ✅

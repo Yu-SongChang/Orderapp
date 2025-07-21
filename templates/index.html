@@ -106,6 +106,32 @@
                 alert("請輸入正確的訂單編號！");
             }
         }
+
+        function showDrinkSelections(input, name) {
+            const container = document.getElementById('drink_options_' + name);
+            container.innerHTML = '';
+            const qty = parseInt(input.value);
+            if (isNaN(qty) || qty <= 0) return;
+
+            for (let i = 0; i < qty; i++) {
+                const select = document.createElement('select');
+                select.name = `drink_${name}_${i}`;
+                select.required = true;
+                const defaultOption = document.createElement('option');
+                defaultOption.value = '';
+                defaultOption.textContent = '請選擇';
+                select.appendChild(defaultOption);
+                {% for drink in drinks %}
+                const option_{{ loop.index }} = document.createElement('option');
+                option_{{ loop.index }}.value = '{{ drink.name }}';
+                option_{{ loop.index }}.textContent = '{{ drink.name }}（${{ drink.price }}{% if drink.price > 30 %}，補{{ drink.price - 30 }}元{% endif %}）';
+                select.appendChild(option_{{ loop.index }});
+                {% endfor %}
+                container.appendChild(document.createTextNode(`第 ${i + 1} 杯：`));
+                container.appendChild(select);
+                container.appendChild(document.createElement('br'));
+            }
+        }
     </script>
 </head>
 <body>
@@ -130,16 +156,8 @@
                         <strong>{{ item.name }}</strong><br>
                         <span style="color: gray;">{{ item.description or '' }}</span>
                         <span class="price">${{ item.price }}</span>
-                        <label>數量：<input type="number" name="quantity_{{ item.name }}" value="0" min="0" style="width: 50px;"></label><br>
-                        <label>附餐飲料（30元內免費）：</label>
-                        <select name="drink_{{ item.name }}">
-                            <option value="">請選擇</option>
-                            {% for drink in drinks %}
-                            <option value="{{ drink.name }}">
-                                {{ drink.name }}（${{ drink.price }}{% if drink.price > 30 %}，補{{ drink.price - 30 }}元{% endif %}）
-                            </option>
-                            {% endfor %}
-                        </select>
+                        <label>數量：<input type="number" name="quantity_{{ item.name }}" value="0" min="0" style="width: 50px;" onchange="showDrinkSelections(this, '{{ item.name }}')"></label><br>
+                        <div id="drink_options_{{ item.name }}"></div>
                     </div>
                     <img src="/static/images/{{ item.image }}" alt="{{ item.name }}">
                 </div>
