@@ -60,6 +60,9 @@
                         {% for item in order["items"] %}
                             <li>
                                 {{ item.name }} × {{ item.quantity }}
+                                {% if item.drink %}
+                                    <br>➡️ 飲料：{{ item.drink.name }}（${{ item.drink.price }}{% if item.drink.price > 30 %}，補{{ item.drink.price - 30 }}元{% endif %}）
+                                {% endif %}
                                 {% if item.done %}
                                     ✅
                                 {% else %}

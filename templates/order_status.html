@@ -46,6 +46,11 @@
         a:hover {
             text-decoration: underline;
         }
+        .drink-info {
+            font-size: 14px;
+            color: #555;
+            margin-left: 12px;
+        }
     </style>
     <script>
         let seconds = 10;
@@ -72,6 +77,16 @@
                     ✅ 已出餐
                 {% else %}
                     ⏳ 準備中
+                {% endif %}
+                {% if item.get("drink") %}
+                    <div class="drink-info">
+                        ▸ 附餐飲料：{{ item.drink.name }}（${{ item.drink.price }}）
+                        {% if item.drink.price > 30 %}
+                            ，補差額：${{ item.drink.price - 30 }}
+                        {% else %}
+                            ，免費
+                        {% endif %}
+                    </div>
                 {% endif %}
             </li>
         {% endfor %}

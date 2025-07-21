@@ -22,6 +22,21 @@
             margin-top: 30px;
             color: #777;
         }
+        .summary {
+            background: #fff;
+            margin: 30px auto;
+            max-width: 400px;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+            text-align: left;
+        }
+        .summary ul {
+            padding-left: 20px;
+        }
+        .summary li {
+            margin-bottom: 10px;
+        }
         a {
             color: #0066cc;
             text-decoration: none;
@@ -35,6 +50,19 @@
     <h1>🎉 感謝您的訂購！</h1>
     <p class="info">📌 您的訂單編號為：<strong>#{{ order.id }}</strong></p>
     <p class="info">🕒 下單時間：{{ order.timestamp }}</p>
+
+    <div class="summary">
+        <h3>訂單摘要：</h3>
+        <ul>
+        {% for item in order.items %}
+            <li>
+                {{ item.name }} × {{ item.quantity }}
+                {% if item.drink %}<br>➡️ 飲料：{{ item.drink.name }}（${{ item.drink.price }}{% if item.drink.price > 30 %}，補{{ item.drink.price - 30 }}元{% endif %}）{% endif %}
+            </li>
+        {% endfor %}
+        </ul>
+        <p><strong>總金額：</strong> ${{ order.total }}</p>
+    </div>
 
     <p class="note">系統將於 <strong>5 秒後</strong> 自動導向訂單狀態頁面。</p>
     <p class="note">若未跳轉，請 <a href="/order_status?order_id={{ order.id }}">點此查詢訂單狀態</a></p>

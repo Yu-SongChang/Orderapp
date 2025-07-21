@@ -20,6 +20,21 @@
             padding: 8px;
             border-radius: 8px;
         }
+        .summary {
+            background: #fff;
+            margin: 30px auto;
+            max-width: 400px;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+            text-align: left;
+        }
+        .summary ul {
+            padding-left: 20px;
+        }
+        .summary li {
+            margin-bottom: 10px;
+        }
         .note {
             margin-top: 30px;
             color: #777;
@@ -39,6 +54,19 @@
     <p>應付金額：<strong>${{ order.total }}</strong></p>
 
     <img src="/static/images/linepay.png" alt="Line Pay QR Code">
+
+    <div class="summary">
+        <h3>訂單摘要：</h3>
+        <ul>
+       {% for item in order["items"] %}
+            <li>
+                {{ item.name }} × {{ item.quantity }}
+                {% if item.drink %}<br>➡️ 飲料：{{ item.drink.name }}（${{ item.drink.price }}{% if item.drink.price > 30 %}，補{{ item.drink.price - 30 }}元{% endif %}）{% endif %}
+            </li>
+        {% endfor %}
+        </ul>
+        <p><strong>總金額：</strong> ${{ order.total }}</p>
+    </div>
 
     <p class="note">付款完成後，請至櫃檯出示付款畫面或告知訂單編號。</p>
 

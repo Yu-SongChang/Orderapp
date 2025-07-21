@@ -26,6 +26,7 @@ menu = [
 ]
 
 orders = []
+drinks = [item for item in menu if item["category"] == "飲料類"]
 
 # 權限驗證
 def check_auth(username, password):
@@ -45,7 +46,7 @@ def requires_auth(f):
 
 @app.route('/')
 def index():
-    return render_template('index.html', menu=menu)
+    return render_template('index.html', menu=menu, drinks=drinks)
 
 @app.route('/submit_order', methods=['POST'])
 def submit_order():
@@ -55,12 +56,24 @@ def submit_order():
         qty = int(request.form.get(f'quantity_{item["name"]}', 0))
         if qty > 0:
             subtotal = item['price'] * qty
+            drink_name = request.form.get(f'drink_{item["name"]}')
+            drink_diff = 0
+            drink_detail = None
+            if item["category"] != "飲料類" and drink_name:
+                drink = next((d for d in drinks if d["name"] == drink_name), None)
+                if drink:
+                    drink_detail = drink
+                    if drink["price"] > 30:
+                        drink_diff = (drink["price"] - 30) * qty
+                        subtotal += drink_diff
             total += subtotal
             order_items.append({
                 "name": item['name'],
                 "price": item['price'],
                 "quantity": qty,
-                "done": False
+                "done": False,
+                "drink": drink_detail if item["category"] != "飲料類" else None,
+                "drink_diff": drink_diff if item["category"] != "飲料類" else 0
             })
     if order_items:
         new_id = len(orders) + 1

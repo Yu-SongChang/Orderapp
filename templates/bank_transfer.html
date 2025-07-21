@@ -27,6 +27,22 @@
             margin-top: 30px;
             color: #777;
         }
+        .details {
+            margin: 30px auto;
+            text-align: left;
+            max-width: 400px;
+        }
+        .details ul {
+            list-style: none;
+            padding: 0;
+        }
+        .details li {
+            margin: 6px 0;
+            padding: 8px;
+            background: #fff;
+            border-radius: 6px;
+            box-shadow: 0 1px 2px rgba(0,0,0,0.1);
+        }
         a {
             color: #0077cc;
             text-decoration: none;
@@ -40,6 +56,20 @@
     <h1>🏦 銀行匯款資訊</h1>
     <p class="info">📌 訂單編號：#{{ order.id }}</p>
     <p class="info">💰 應付金額：<strong>${{ order.total }}</strong></p>
+
+    <div class="details">
+        <strong>🧾 訂單明細：</strong>
+        <ul>
+           {% for item in order["items"] %}
+                <li>
+                    {{ item.name }} × {{ item.quantity }}<br>
+                    {% if item.drink %}
+                        附餐飲料：{{ item.drink.name }}（${{ item.drink.price }}{% if item.drink.price > 30 %}，補{{ item.drink.price - 30 }}元{% endif %}）
+                    {% endif %}
+                </li>
+            {% endfor %}
+        </ul>
+    </div>
 
     <div class="bank">
         📢 請轉帳至：玉山銀行<br>
