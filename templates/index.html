@@ -1,187 +1,198 @@
 <!DOCTYPE html>
 <html lang="zh-Hant">
 <head>
-    <meta charset="UTF-8">
-    <title>和琴創意食堂 線上點餐</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <style>
-        body {
-            font-family: "微軟正黑體", sans-serif;
-            margin: 0;
-            padding: 0;
-            background-color: #f8f5f0;
-        }
-        header {
-            background-color: #3e2d23;
-        }
-        header img {
-            width: 100%;
-            height: auto;
-            display: block;
-        }
-        .container {
-            padding: 20px;
-        }
-        h1 {
-            color: #3e2d23;
-            margin-bottom: 10px;
-        }
-        .category-btn, .toggle-btn, button[type="submit"] {
-            margin: 5px 0;
-            padding: 10px 16px;
-            border: none;
-            border-radius: 6px;
-            background-color: #a61c1c;
-            color: white;
-            cursor: pointer;
-            display: block;
-            width: 100%;
-            max-width: 200px;
-        }
-        .toggle-btn {
-            background-color: #7a1515;
-        }
-        .category-section {
-            display: none;
-            margin-top: 10px;
-        }
-        .category-section.active {
-            display: block;
-        }
-        .product {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            background: white;
-            padding: 10px;
-            border-radius: 10px;
-            box-shadow: 0 1px 4px rgba(0,0,0,0.1);
-            margin-bottom: 10px;
-        }
-        .product img {
-            width: 100px;
-            border-radius: 8px;
-        }
-        .product-info {
-            flex: 1;
-            margin-right: 10px;
-        }
-        .product-info strong {
-            font-size: 16px;
-        }
-        .product-info span.price {
-            color: #e67e22;
-            display: block;
-            margin: 4px 0;
-        }
-        button[type="submit"] {
-            background-color: #e74c3c;
-        }
-        @media screen and (max-width: 600px) {
-            .product {
-                flex-direction: column;
-                align-items: flex-start;
-            }
-            .product img {
-                margin-top: 10px;
-            }
-        }
-    </style>
-    <script>
-        function toggleCategory(categoryId) {
-            const section = document.getElementById(categoryId);
-            section.classList.toggle('active');
-        }
-
-        function toggleAll(expand) {
-            const sections = document.querySelectorAll('.category-section');
-            sections.forEach(sec => sec.classList.toggle('active', expand));
-        }
-
-        function inputOrderId() {
-            const orderId = prompt("請輸入您的訂單編號（例如：1）");
-            if (orderId && !isNaN(orderId)) {
-                window.location.href = "/order_status?order_id=" + orderId;
-            } else if (orderId !== null) {
-                alert("請輸入正確的訂單編號！");
-            }
-        }
-
-        function showDrinkSelections(input, name) {
-            const container = document.getElementById('drink_options_' + name);
-            container.innerHTML = '';
-            const qty = parseInt(input.value);
-            if (isNaN(qty) || qty <= 0) return;
-
-            for (let i = 0; i < qty; i++) {
-                const select = document.createElement('select');
-                select.name = `drink_${name}_${i}`;
-                select.required = true;
-                const defaultOption = document.createElement('option');
-                defaultOption.value = '';
-                defaultOption.textContent = '請選擇';
-                select.appendChild(defaultOption);
-                {% for drink in drinks %}
-                const option_{{ loop.index }} = document.createElement('option');
-                option_{{ loop.index }}.value = '{{ drink.name }}';
-                option_{{ loop.index }}.textContent = '{{ drink.name }}（${{ drink.price }}{% if drink.price > 30 %}，補{{ drink.price - 30 }}元{% endif %}）';
-                select.appendChild(option_{{ loop.index }});
-                {% endfor %}
-                container.appendChild(document.createTextNode(`第 ${i + 1} 杯：`));
-                container.appendChild(select);
-                container.appendChild(document.createElement('br'));
-            }
-        }
-    </script>
+  <meta charset="UTF-8" />
+  <title>和琴創意食堂 線上點餐</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <style>
+    body {
+      font-family: "微軟正黑體", sans-serif;
+      margin: 0;
+      padding: 0;
+      background-color: #f8f5f0;
+    }
+    header {
+      background-color: #3e2d23;
+    }
+    header img {
+      width: 100%;
+      height: auto;
+      display: block;
+    }
+    .container {
+      padding: 20px;
+    }
+    h1 {
+      color: #3e2d23;
+      margin-bottom: 10px;
+    }
+    .category-btn, .toggle-btn, button[type="submit"] {
+      margin: 5px 0;
+      padding: 10px 16px;
+      border: none;
+      border-radius: 6px;
+      background-color: #a61c1c;
+      color: white;
+      cursor: pointer;
+      display: block;
+      width: 100%;
+      max-width: 200px;
+    }
+    .toggle-btn {
+      background-color: #7a1515;
+    }
+    .category-section {
+      display: none;
+      margin-top: 10px;
+    }
+    .category-section.active {
+      display: block;
+    }
+    .product {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: white;
+      padding: 10px;
+      border-radius: 10px;
+      box-shadow: 0 1px 4px rgba(0,0,0,0.1);
+      margin-bottom: 10px;
+      flex-wrap: wrap;
+    }
+    .product img {
+      width: 100px;
+      border-radius: 8px;
+    }
+    .product-info {
+      flex: 1;
+      margin-right: 10px;
+    }
+    .product-info strong {
+      font-size: 16px;
+    }
+    .product-info span.price {
+      color: #e67e22;
+      display: block;
+      margin: 4px 0;
+    }
+    .drink-list {
+      margin-top: 10px;
+      padding-left: 10px;
+    }
+    .drink-list label {
+      display: block;
+      margin-bottom: 4px;
+    }
+    .drink-list input[type="number"] {
+      width: 50px;
+    }
+    .flash-message {
+      background-color: #ffd2d2;
+      color: #900;
+      padding: 10px;
+      border: 1px solid #f5a9a9;
+      border-radius: 6px;
+      margin-bottom: 15px;
+    }
+  </style>
 </head>
 <body>
-    <header>
-        <img src="/static/images/banner.jpg" alt="和琴創意食堂橫幅">
-    </header>
+  <header>
+    <img src="/static/images/banner.jpg" alt="和琴創意食堂橫幅" />
+  </header>
+  <div class="container">
+    <h1>和琴創意食堂</h1>
 
-    <div class="container">
-        <h1>和琴創意食堂</h1>
-        <button onclick="inputOrderId()">🔍 手動輸入訂單編號查詢</button>
+    {% with messages = get_flashed_messages() %}
+      {% if messages %}
+        <div class="flash-message">
+          {% for message in messages %}
+            <p>{{ message }}</p>
+          {% endfor %}
+        </div>
+      {% endif %}
+    {% endwith %}
 
-        <button class="toggle-btn" onclick="toggleAll(true)">全部展開</button>
-        <button class="toggle-btn" onclick="toggleAll(false)">全部收合</button>
+    <button onclick="inputOrderId()">🔍 手動輸入訂單編號查詢</button>
+    <button class="toggle-btn" onclick="toggleAll(true)">全部展開</button>
+    <button class="toggle-btn" onclick="toggleAll(false)">全部收合</button>
 
-        <form method="POST" action="/submit_order">
-            {% for category_id, category_label in [('pasta', '義大利麵類'), ('pizza', 'Pizza類'), ('curry', '咖哩飯類')] %}
-            <button type="button" class="category-btn" onclick="toggleCategory('{{ category_id }}')">{{ category_label.replace('類', '') }}</button>
-            <div id="{{ category_id }}" class="category-section">
-                {% for item in menu if item.category == category_label %}
-                <div class="product">
-                    <div class="product-info">
-                        <strong>{{ item.name }}</strong><br>
-                        <span style="color: gray;">{{ item.description or '' }}</span>
-                        <span class="price">${{ item.price }}</span>
-                        <label>數量：<input type="number" name="quantity_{{ item.name }}" value="0" min="0" style="width: 50px;" onchange="showDrinkSelections(this, '{{ item.name }}')"></label><br>
-                        <div id="drink_options_{{ item.name }}"></div>
-                    </div>
-                    <img src="/static/images/{{ item.image }}" alt="{{ item.name }}">
-                </div>
-                {% endfor %}
+    <form method="POST" action="/submit_order">
+      {% for category_id, category_label in [('pasta', '義大利麵類'), ('pizza', 'Pizza類'), ('curry', '咖哩飯類')] %}
+      <button type="button" class="category-btn" onclick="toggleCategory('{{ category_id }}')">
+        {{ category_label.replace('類', '') }}
+      </button>
+      <div id="{{ category_id }}" class="category-section">
+        {% for item in menu if item.category == category_label %}
+        <div class="product">
+          <div class="product-info">
+            <strong>{{ item.name }}</strong><br />
+            <span class="price">${{ item.price }}</span>
+            <label>
+              數量：
+              <input type="number" name="quantity_{{ item.name }}"
+                value="{{ form_data['quantity_' ~ item.name] if form_data else 0 }}" min="0" />
+            </label>
+            <div class="drink-list">
+              <p>請分配附餐飲料（超過 $30 飲品須補差額）：</p>
+              {% for drink in drinks %}
+              <label>
+                {{ drink.name }}（${{ drink.price }}{% if drink.price > 30 %}，補{{ drink.price - 30 }}元{% endif %}）：
+                <input type="number" name="drink_for_{{ item.name }}_{{ drink.name }}"
+                  value="{{ form_data['drink_for_' ~ item.name ~ '_' ~ drink.name] if form_data else 0 }}" min="0" />
+              </label>
+              {% endfor %}
             </div>
-            {% endfor %}
+          </div>
+          <img src="/static/images/{{ item.image }}" alt="{{ item.name }}" />
+        </div>
+        {% endfor %}
+      </div>
+      {% endfor %}
 
-            <button type="button" class="category-btn" onclick="toggleCategory('drink')">飲料</button>
-            <div id="drink" class="category-section">
-                {% for item in menu if item.category == "飲料類" %}
-                <div class="product">
-                    <div class="product-info">
-                        <strong>{{ item.name }}</strong><br>
-                        <span style="color: gray;">{{ item.description or '' }}</span>
-                        <span class="price">${{ item.price }}</span>
-                        <label>數量：<input type="number" name="quantity_{{ item.name }}" value="0" min="0" style="width: 50px;"></label>
-                    </div>
-                    <img src="/static/images/{{ item.image }}" alt="{{ item.name }}">
-                </div>
-                {% endfor %}
-            </div>
+      <!-- 單點飲料 -->
+      <button type="button" class="category-btn" onclick="toggleCategory('drinks')">單點飲料</button>
+      <div id="drinks" class="category-section">
+        {% for drink in drinks %}
+        <div class="product">
+          <div class="product-info">
+            <strong>{{ drink.name }}</strong><br />
+            <span class="price">${{ drink.price }}</span>
+            <label>
+              數量：
+              <input type="number" name="quantity_{{ drink.name }}"
+                value="{{ form_data['quantity_' ~ drink.name] if form_data else 0 }}" min="0" />
+            </label>
+          </div>
+          <img src="/static/images/{{ drink.image }}" alt="{{ drink.name }}" />
+        </div>
+        {% endfor %}
+      </div>
 
-            <button type="submit">送出訂單</button>
-        </form>
-    </div>
+      <button type="submit">送出訂單</button>
+    </form>
+  </div>
+
+  <script>
+    function toggleCategory(categoryId) {
+      const section = document.getElementById(categoryId);
+      section.classList.toggle("active");
+    }
+
+    function toggleAll(expand) {
+      document.querySelectorAll(".category-section").forEach(sec => {
+        sec.classList.toggle("active", expand);
+      });
+    }
+
+    function inputOrderId() {
+      const orderId = prompt("請輸入您的訂單編號（例如：1）");
+      if (orderId && !isNaN(orderId)) {
+        window.location.href = "/order_status?order_id=" + orderId;
+      } else if (orderId !== null) {
+        alert("請輸入正確的訂單編號！");
+      }
+    }
+  </script>
 </body>
 </html>

@@ -2,85 +2,83 @@
 <html lang="zh-Hant">
 <head>
     <meta charset="UTF-8">
-    <title>銀行轉帳提醒</title>
+    <title>銀行匯款資訊</title>
     <style>
         body {
             font-family: "微軟正黑體", sans-serif;
             padding: 40px;
-            text-align: center;
             background-color: #f9f9f9;
+            text-align: center;
+        }
+        .box {
+            background-color: #fff;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.15);
+            max-width: 600px;
+            margin: auto;
         }
         h1 {
-            color: #4CAF50;
-        }
-        .info {
-            font-size: 18px;
-            margin: 20px 0;
-        }
-        .bank {
-            font-size: 20px;
-            font-weight: bold;
-            margin: 30px 0;
             color: #2c3e50;
+            margin-bottom: 10px;
         }
-        .note {
-            margin-top: 30px;
-            color: #777;
+        p {
+            font-size: 16px;
         }
-        .details {
-            margin: 30px auto;
+        .bank-info {
+            background-color: #f3f3f3;
+            border: 1px solid #ccc;
+            padding: 15px;
+            margin: 20px auto;
             text-align: left;
-            max-width: 400px;
-        }
-        .details ul {
-            list-style: none;
-            padding: 0;
-        }
-        .details li {
-            margin: 6px 0;
-            padding: 8px;
-            background: #fff;
             border-radius: 6px;
-            box-shadow: 0 1px 2px rgba(0,0,0,0.1);
+            line-height: 1.6;
         }
-        a {
-            color: #0077cc;
-            text-decoration: none;
+        .order-list {
+            text-align: left;
+            margin-top: 20px;
         }
-        a:hover {
-            text-decoration: underline;
+        .order-list ul {
+            padding-left: 20px;
         }
     </style>
 </head>
 <body>
-    <h1>🏦 銀行匯款資訊</h1>
-    <p class="info">📌 訂單編號：#{{ order.id }}</p>
-    <p class="info">💰 應付金額：<strong>${{ order.total }}</strong></p>
+    <div class="box">
+        <h1>🏦 銀行匯款資訊</h1>
+        <p>訂單編號：#{{ order.id }}</p>
+        <p>應付金額：<strong>${{ order.total }}</strong></p>
 
-    <div class="details">
-        <strong>🧾 訂單明細：</strong>
-        <ul>
-           {% for item in order["items"] %}
-                <li>
-                    {{ item.name }} × {{ item.quantity }}<br>
-                    {% if item.drink %}
-                        附餐飲料：{{ item.drink.name }}（${{ item.drink.price }}{% if item.drink.price > 30 %}，補{{ item.drink.price - 30 }}元{% endif %}）
-                    {% endif %}
-                </li>
-            {% endfor %}
-        </ul>
+        <div class="order-list">
+            <h3>訂購明細：</h3>
+            <ul>
+                {% for item in order["items"] %}
+                    <li>
+                        {% if item.category == "飲料類" %}
+                            🥤 {{ item.name }} × {{ item.quantity }}
+                        {% else %}
+                            🍽 {{ item.name }} × {{ item.quantity }}
+                            {% if item.drinks %}
+                                <ul>
+                                    {% for d in item.drinks %}
+                                        <li>{{ d.name }}（${{ d.price }}{% if d.price > 30 %}，補{{ d.price - 30 }}元{% endif %}）</li>
+                                    {% endfor %}
+                                </ul>
+                            {% endif %}
+                        {% endif %}
+                    </li>
+                {% endfor %}
+            </ul>
+        </div>
+
+        <div class="bank-info">
+            <strong>銀行名稱：</strong> 和琴銀行<br>
+            <strong>帳號：</strong> 123-4567890-00<br>
+            <strong>戶名：</strong> 和琴創意食堂<br>
+        </div>
+
+        <p>請於匯款後告知我們您的匯款帳號後五碼與訂單編號，以利對帳。</p>
+        <a href="/">返回首頁</a>
     </div>
-
-    <div class="bank">
-        📢 請轉帳至：玉山銀行<br>
-        帳號：<strong>123456789</strong>
-    </div>
-
-    <p class="note">匯款完成後請至櫃檯出示帳號末五碼或告知訂單編號。</p>
-
-    <p>
-        <a href="/order_status?order_id={{ order.id }}">📄 查詢訂單狀態</a>｜
-        <a href="/">🏠 回首頁</a>
-    </p>
 </body>
 </html>

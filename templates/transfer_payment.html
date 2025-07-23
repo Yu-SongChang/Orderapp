@@ -58,12 +58,19 @@
     <div class="summary">
         <h3>訂單摘要：</h3>
         <ul>
-       {% for item in order["items"] %}
+            {% for item in order["items"] %}
             <li>
                 {{ item.name }} × {{ item.quantity }}
-                {% if item.drink %}<br>➡️ 飲料：{{ item.drink.name }}（${{ item.drink.price }}{% if item.drink.price > 30 %}，補{{ item.drink.price - 30 }}元{% endif %}）{% endif %}
+                {% if item.drinks %}
+                    <br>➡️ 飲料：
+                    <ul>
+                        {% for d in item.drinks %}
+                            <li>{{ d.name }}（${{ d.price }}{% if d.price > 30 %}，補{{ d.price - 30 }}元{% else %}，無補差額{% endif %}）</li>
+                        {% endfor %}
+                    </ul>
+                {% endif %}
             </li>
-        {% endfor %}
+            {% endfor %}
         </ul>
         <p><strong>總金額：</strong> ${{ order.total }}</p>
     </div>

@@ -2,69 +2,72 @@
 <html lang="zh-Hant">
 <head>
     <meta charset="UTF-8">
-    <title>訂單送出成功</title>
-    <meta http-equiv="refresh" content="5;url=/order_status?order_id={{ order.id }}">
+    <title>訂單成功</title>
     <style>
         body {
             font-family: "微軟正黑體", sans-serif;
-            text-align: center;
-            padding: 40px;
-            background-color: #f9f9f9;
+            padding: 30px;
+            background-color: #f3f3f3;
         }
-        h1 {
-            color: #4CAF50;
-        }
-        .info {
-            font-size: 20px;
-            margin-top: 20px;
-        }
-        .note {
-            margin-top: 30px;
-            color: #777;
-        }
-        .summary {
-            background: #fff;
-            margin: 30px auto;
-            max-width: 400px;
+        .order-box {
+            background-color: #fff;
             padding: 20px;
-            border-radius: 10px;
-            box-shadow: 0 2px 6px rgba(0,0,0,0.1);
-            text-align: left;
+            border-radius: 8px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            max-width: 600px;
+            margin: auto;
         }
-        .summary ul {
-            padding-left: 20px;
+        h2 {
+            color: #2c3e50;
         }
-        .summary li {
-            margin-bottom: 10px;
+        ul {
+            list-style: none;
+            padding: 0;
         }
-        a {
-            color: #0066cc;
-            text-decoration: none;
+        li {
+            margin-bottom: 12px;
         }
-        a:hover {
-            text-decoration: underline;
+        .drink-detail {
+            margin-left: 20px;
+            color: #555;
         }
     </style>
 </head>
 <body>
-    <h1>🎉 感謝您的訂購！</h1>
-    <p class="info">📌 您的訂單編號為：<strong>#{{ order.id }}</strong></p>
-    <p class="info">🕒 下單時間：{{ order.timestamp }}</p>
+    <div class="order-box">
+        <h2>✅ 您的訂單已送出！</h2>
+        <p><strong>訂單編號：</strong>#{{ order.id }}</p>
+        <p><strong>訂單時間：</strong>{{ order.timestamp }}</p>
 
-    <div class="summary">
-        <h3>訂單摘要：</h3>
         <ul>
-        {% for item in order.items %}
+            {% for item in order["items"] %}
             <li>
-                {{ item.name }} × {{ item.quantity }}
-                {% if item.drink %}<br>➡️ 飲料：{{ item.drink.name }}（${{ item.drink.price }}{% if item.drink.price > 30 %}，補{{ item.drink.price - 30 }}元{% endif %}）{% endif %}
+                {% if item.category == "飲料類" %}
+                    🥤 {{ item.name }} × {{ item.quantity }}（${{ item.price }}）<br>
+                {% else %}
+                    🍽 {{ item.name }} × {{ item.quantity }}（${{ item.price }}）<br>
+                    {% if item.drinks %}
+                    <div class="drink-detail">
+                        附餐飲料：
+                        <ul>
+                            {% for drink in item.drinks %}
+                            <li>
+                                {{ drink.name }}（${{ drink.price }}
+                                {% if drink.price > 30 %}，補{{ drink.price - 30 }}元
+                                {% else %}，無補差額
+                                {% endif %}）
+                            </li>
+                            {% endfor %}
+                        </ul>
+                    </div>
+                    {% endif %}
+                {% endif %}
             </li>
-        {% endfor %}
+            {% endfor %}
         </ul>
-        <p><strong>總金額：</strong> ${{ order.total }}</p>
-    </div>
 
-    <p class="note">系統將於 <strong>5 秒後</strong> 自動導向訂單狀態頁面。</p>
-    <p class="note">若未跳轉，請 <a href="/order_status?order_id={{ order.id }}">點此查詢訂單狀態</a></p>
+        <p><strong>應付總金額：</strong> ${{ order.total }}</p>
+        <a href="/">返回首頁</a>
+    </div>
 </body>
 </html>

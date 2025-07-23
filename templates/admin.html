@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <title>訂單管理</title>
-    <meta http-equiv="refresh" content="10"> <!-- 每10秒自動刷新 -->
+    <meta http-equiv="refresh" content="10">
     <style>
         body {
             font-family: "微軟正黑體", sans-serif;
@@ -50,6 +50,18 @@
     <!-- 今日營業額 -->
     <h2>💰 今日總營業額： ${{ today_total }}</h2>
 
+    <!-- 飲料統計 -->
+    <h2>🥤 飲料統計</h2>
+    {% if drink_summary %}
+        <ul>
+            {% for drink_name, qty in drink_summary.items() %}
+                <li>{{ drink_name }}：{{ qty }} 杯</li>
+            {% endfor %}
+        </ul>
+    {% else %}
+        <p>尚無飲料統計資料。</p>
+    {% endif %}
+
     {% if orders %}
         <form method="POST" action="/clear_orders" onsubmit="return confirmClear();">
             <button type="submit">🗑 清除全部訂單</button>
@@ -64,17 +76,24 @@
                     <ul>
                         {% for item in order["items"] %}
                             <li>
-                                {{ item.name }} × {{ item.quantity }}
-                                {% if item.drinks %}
-                                    <div class="drink-detail">
-                                        附餐飲料：
-                                        <ul>
-                                            {% for d in item.drinks %}
-                                            <li>{{ d.name }}（${{ d.price }}{% if d.price > 30 %}，補{{ d.price - 30 }}元{% endif %}）</li>
-                                            {% endfor %}
-                                        </ul>
-                                    </div>
+                                {% if item.category == "飲料類" %}
+                                    🥤 {{ item.name }} × {{ item.quantity }}
+                                {% else %}
+                                    🍽 {{ item.name }} × {{ item.quantity }}
+                                    {% if item.drinks %}
+                                        <div class="drink-detail">
+                                            附餐飲料：
+                                            <ul>
+                                                {% for d in item.drinks %}
+                                                    <li>
+                                                        {{ d.name }}（${{ d.price }}{% if d.price > 30 %}，補{{ d.price - 30 }}元{% else %}，折抵30元{% endif %}）
+                                                    </li>
+                                                {% endfor %}
+                                            </ul>
+                                        </div>
+                                    {% endif %}
                                 {% endif %}
+
                                 {% if item.done %}
                                     ✅
                                 {% else %}

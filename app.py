@@ -1,26 +1,24 @@
-from flask import Flask, render_template, request, redirect, url_for, Response
+from flask import Flask, render_template, request, redirect, url_for, Response, flash
 from datetime import datetime
 from functools import wraps
 import os
+from collections import defaultdict
 
 app = Flask(__name__)
+app.secret_key = 'your_secret_key'
 
 USERNAME = 'admin'
 PASSWORD = '1234'
 
-# 餐點資料
 menu = [
     {"name": "咖哩雞排飯", "price": 130, "image": "咖哩雞排飯.jpg", "category": "咖哩飯類"},
     {"name": "咖哩豬排飯", "price": 125, "image": "咖哩豬排飯.jpg", "category": "咖哩飯類"},
-
     {"name": "咖啡", "price": 50, "image": "咖啡.jpg", "category": "飲料類"},
     {"name": "拉花咖啡", "price": 65, "image": "拉花咖啡.jpg", "category": "飲料類"},
     {"name": "普洱茶", "price": 45, "image": "普洱茶.jpg", "category": "飲料類"},
     {"name": "紅烏龍茶", "price": 45, "image": "紅烏龍茶.jpg", "category": "飲料類"},
-
     {"name": "青醬義大利麵", "price": 110, "image": "青醬義大利麵.jpg", "category": "義大利麵類"},
     {"name": "紅醬義大利麵", "price": 115, "image": "紅醬義大利麵.jpg", "category": "義大利麵類"},
-
     {"name": "海鮮pizza", "price": 150, "image": "海鮮pizza.jpg", "category": "Pizza類"},
     {"name": "總匯pizza", "price": 160, "image": "總匯pizza.jpg", "category": "Pizza類"}
 ]
@@ -28,14 +26,11 @@ menu = [
 orders = []
 drinks = [item for item in menu if item["category"] == "飲料類"]
 
-
 def check_auth(username, password):
     return username == USERNAME and password == PASSWORD
 
-
 def authenticate():
     return Response('需要帳號密碼才能查看此頁面。', 401, {'WWW-Authenticate': 'Basic realm="Login Required"'})
-
 
 def requires_auth(f):
     @wraps(f)
@@ -44,54 +39,75 @@ def requires_auth(f):
         if not auth or not check_auth(auth.username, auth.password):
             return authenticate()
         return f(*args, **kwargs)
-
     return decorated
-
 
 @app.route('/')
 def index():
-    return render_template('index.html', menu=menu, drinks=drinks)
-
+    return render_template('index.html', menu=menu, drinks=drinks, request_form=None)
 
 @app.route('/submit_order', methods=['POST'])
 def submit_order():
     order_items = []
-    total = 0
     drink_lookup = {d["name"]: d for d in drinks}
+    total_main_qty = 0
+    attached_drinks = []
+    total = 0
 
     for item in menu:
-        qty = int(request.form.get(f'quantity_{item["name"]}', 0))
+        qty_str = request.form.get(f'quantity_{item["name"]}', '0')
+        try:
+            qty = int(qty_str) if qty_str.strip() else 0
+        except ValueError:
+            qty = 0
+
         if qty <= 0:
             continue
 
-        subtotal = item['price'] * qty
-        item_entry = {
-            "name": item['name'],
-            "price": item['price'],
-            "quantity": qty,
-            "done": False
-        }
-
-        drink_selections = []
-        total_drink_diff = 0
         if item["category"] != "飲料類":
-            for i in range(qty):
-                drink_name = request.form.get(f'drink_{item["name"]}_{i}', '')
-                if drink_name and drink_name in drink_lookup:
-                    drink = drink_lookup[drink_name]
-                    drink_selections.append({
-                        "name": drink["name"],
-                        "price": drink["price"]
-                    })
-                    if drink["price"] > 30:
-                        total_drink_diff += (drink["price"] - 30)
+            drinks_for_meal = []
+            for drink in drinks:
+                drink_qty_key = f"drink_for_{item['name']}_{drink['name']}"
+                drink_qty = int(request.form.get(drink_qty_key, 0))
+                for _ in range(drink_qty):
+                    drinks_for_meal.append(drink)
+            attached_drinks.extend(drinks_for_meal)
+            total_main_qty += qty
+            order_items.append({
+                "name": item["name"],
+                "price": item["price"],
+                "quantity": qty,
+                "category": item["category"],
+                "done": False,
+                "drinks": drinks_for_meal
+            })
+        else:
+            drink_qty = int(request.form.get(f'quantity_{item["name"]}', 0))
+            if drink_qty > 0:
+                order_items.append({
+                    "name": item["name"],
+                    "price": item["price"],
+                    "quantity": drink_qty,
+                    "category": item["category"],
+                    "done": False
+                })
+                total += item["price"] * drink_qty
 
-        if drink_selections:
-            item_entry["drinks"] = drink_selections
+    if len(attached_drinks) < total_main_qty:
+        flash(f"您點了 {total_main_qty} 份主餐，但只選擇了 {len(attached_drinks)} 杯附餐飲料，請至少選擇等量的飲料！")
+        return render_template('index.html', menu=menu, drinks=drinks, form_data=request.form)
 
-        subtotal += total_drink_diff
-        total += subtotal
-        order_items.append(item_entry)
+    # 折抵計算
+    offset_remaining = total_main_qty * 30
+    for drink in attached_drinks:
+        if offset_remaining >= drink["price"]:
+            offset_remaining -= drink["price"]
+        else:
+            total += drink["price"] - offset_remaining if offset_remaining > 0 else drink["price"]
+            offset_remaining = max(offset_remaining - drink["price"], 0)
+
+    for item in order_items:
+        if item["category"] != "飲料類":
+            total += item["price"] * item["quantity"]
 
     if order_items:
         new_order = {
@@ -103,9 +119,7 @@ def submit_order():
         }
         orders.append(new_order)
         return redirect(url_for('choose_payment', order_id=new_order["id"]))
-
     return redirect(url_for('index'))
-
 
 @app.route('/choose_payment/<int:order_id>')
 def choose_payment(order_id):
@@ -114,14 +128,12 @@ def choose_payment(order_id):
         return redirect(url_for('index'))
     return render_template('choose_payment.html', order=order)
 
-
 @app.route('/transfer_payment/<int:order_id>')
 def transfer_payment(order_id):
     order = next((o for o in orders if o["id"] == order_id), None)
     if not order:
         return redirect(url_for('index'))
-    return render_template('transfer_payment.html', order=order)
-
+    return render_template('success.html', order=order)
 
 @app.route('/bank_transfer/<int:order_id>')
 def bank_transfer(order_id):
@@ -129,16 +141,6 @@ def bank_transfer(order_id):
     if not order:
         return redirect(url_for('index'))
     return render_template('bank_transfer.html', order=order)
-
-
-@app.route('/success')
-def success():
-    order_id = request.args.get('order_id', type=int)
-    order = next((o for o in orders if o["id"] == order_id), None)
-    if not order:
-        return redirect(url_for('index'))
-    return render_template('success.html', order=order)
-
 
 @app.route('/order_status')
 def order_status():
@@ -148,15 +150,23 @@ def order_status():
         return redirect(url_for('index'))
     return render_template('order_status.html', order=order)
 
-
 @app.route('/admin')
 @requires_auth
 def admin():
     today = datetime.now().strftime("%Y-%m-%d")
     today_orders = [o for o in orders if o["timestamp"].startswith(today)]
     today_total = sum(o["total"] for o in today_orders)
-    return render_template('admin.html', orders=orders, today_total=today_total)
 
+    drink_summary = defaultdict(int)
+    for order in orders:
+        for item in order["items"]:
+            if item.get("category") == "飲料類":
+                drink_summary[item["name"]] += item["quantity"]
+            elif "drinks" in item:
+                for d in item["drinks"]:
+                    drink_summary[d["name"]] += 1
+
+    return render_template('admin.html', orders=orders, today_total=today_total, drink_summary=drink_summary)
 
 @app.route('/mark_completed/<int:order_id>', methods=['POST'])
 @requires_auth
@@ -168,7 +178,6 @@ def mark_completed(order_id):
             order["completed"] = True
             break
     return redirect(url_for('admin'))
-
 
 @app.route('/mark_item_done/<int:order_id>/<int:item_index>', methods=['POST'])
 @requires_auth
@@ -182,7 +191,6 @@ def mark_item_done(order_id, item_index):
             break
     return redirect(url_for('admin'))
 
-
 @app.route('/delete_order/<int:order_id>', methods=['POST'])
 @requires_auth
 def delete_order(order_id):
@@ -190,13 +198,11 @@ def delete_order(order_id):
     orders = [o for o in orders if o["id"] != order_id]
     return redirect(url_for('admin'))
 
-
 @app.route('/clear_orders', methods=['POST'])
 @requires_auth
 def clear_orders():
     orders.clear()
     return redirect(url_for('admin'))
-
 
 if __name__ == '__main__':
     port = int(os.environ.get("PORT", 10000))
