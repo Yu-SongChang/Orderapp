@@ -78,14 +78,15 @@
                 {% else %}
                     ⏳ 準備中
                 {% endif %}
-                {% if item.get("drink") %}
+
+                {% if item.get("drinks") %}
                     <div class="drink-info">
-                        ▸ 附餐飲料：{{ item.drink.name }}（${{ item.drink.price }}）
-                        {% if item.drink.price > 30 %}
-                            ，補差額：${{ item.drink.price - 30 }}
-                        {% else %}
-                            ，免費
-                        {% endif %}
+                        ▸ 附餐飲料：
+                        <ul>
+                            {% for d in item.drinks %}
+                                <li>{{ d.name }}（${{ d.price }}）</li>
+                            {% endfor %}
+                        </ul>
                     </div>
                 {% endif %}
             </li>

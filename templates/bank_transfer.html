@@ -55,13 +55,13 @@
                 {% for item in order["items"] %}
                     <li>
                         {% if item.category == "飲料類" %}
-                            🥤 {{ item.name }} × {{ item.quantity }}
+                            🥤 {{ item.name }} × {{ item.quantity }}（${{ item.price }}）
                         {% else %}
-                            🍽 {{ item.name }} × {{ item.quantity }}
+                            🍽 {{ item.name }} × {{ item.quantity }}（${{ item.price }}）
                             {% if item.drinks %}
                                 <ul>
                                     {% for d in item.drinks %}
-                                        <li>{{ d.name }}（${{ d.price }}{% if d.price > 30 %}，補{{ d.price - 30 }}元{% endif %}）</li>
+                                        <li>{{ d.name }}（${{ d.price }}）</li>
                                     {% endfor %}
                                 </ul>
                             {% endif %}

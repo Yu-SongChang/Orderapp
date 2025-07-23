@@ -29,6 +29,11 @@
         .btn:hover {
             background-color: #45a049;
         }
+        img.icon {
+            height: 20px;
+            vertical-align: middle;
+            margin-right: 8px;
+        }
     </style>
 </head>
 <body>
@@ -38,9 +43,9 @@
 
     <div class="option">
         <a href="/transfer_payment/{{ order.id }}" class="btn">
-    <img src="/static/images/line_logo.png" alt="Line" style="height: 20px; vertical-align: middle; margin-right: 8px;">
-    使用 Line Pay 付款
-</a>
+            <img src="{{ url_for('static', filename='images/line_logo.png') }}" alt="Line" class="icon">
+            使用 Line Pay 付款
+        </a>
 
         <a href="/bank_transfer/{{ order.id }}" class="btn">🏦 銀行帳戶匯款</a>
     </div>

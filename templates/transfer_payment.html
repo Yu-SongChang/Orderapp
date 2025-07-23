@@ -13,7 +13,7 @@
         h1 {
             color: #4CAF50;
         }
-        img {
+        img.qr {
             max-width: 220px;
             margin: 20px 0;
             border: 1px solid #ccc;
@@ -53,23 +53,23 @@
     <p>訂單編號：#{{ order.id }}</p>
     <p>應付金額：<strong>${{ order.total }}</strong></p>
 
-    <img src="/static/images/linepay.png" alt="Line Pay QR Code">
+    <img class="qr" src="{{ url_for('static', filename='images/linepay.png') }}" alt="Line Pay QR Code">
 
     <div class="summary">
         <h3>訂單摘要：</h3>
         <ul>
             {% for item in order["items"] %}
-            <li>
-                {{ item.name }} × {{ item.quantity }}
-                {% if item.drinks %}
-                    <br>➡️ 飲料：
-                    <ul>
-                        {% for d in item.drinks %}
-                            <li>{{ d.name }}（${{ d.price }}{% if d.price > 30 %}，補{{ d.price - 30 }}元{% else %}，無補差額{% endif %}）</li>
-                        {% endfor %}
-                    </ul>
-                {% endif %}
-            </li>
+                <li>
+                    {{ item.name }} × {{ item.quantity }}
+                    {% if item.drinks %}
+                        <br>➡️ 飲料：
+                        <ul>
+                            {% for d in item.drinks %}
+                                <li>{{ d.name }}（${{ d.price }}）</li>
+                            {% endfor %}
+                        </ul>
+                    {% endif %}
+                </li>
             {% endfor %}
         </ul>
         <p><strong>總金額：</strong> ${{ order.total }}</p>

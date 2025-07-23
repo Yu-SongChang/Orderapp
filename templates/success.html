@@ -51,12 +51,7 @@
                         附餐飲料：
                         <ul>
                             {% for drink in item.drinks %}
-                            <li>
-                                {{ drink.name }}（${{ drink.price }}
-                                {% if drink.price > 30 %}，補{{ drink.price - 30 }}元
-                                {% else %}，無補差額
-                                {% endif %}）
-                            </li>
+                            <li>🥤 {{ drink.name }}（${{ drink.price }}）</li>
                             {% endfor %}
                         </ul>
                     </div>

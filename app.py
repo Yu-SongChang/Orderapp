@@ -4,7 +4,7 @@ from functools import wraps
 import os
 from collections import defaultdict
 
-app = Flask(__name__)
+app = Flask(__name__, static_folder='static')
 app.secret_key = 'your_secret_key'
 
 USERNAME = 'admin'
@@ -48,7 +48,6 @@ def index():
 @app.route('/submit_order', methods=['POST'])
 def submit_order():
     order_items = []
-    drink_lookup = {d["name"]: d for d in drinks}
     total_main_qty = 0
     attached_drinks = []
     total = 0
@@ -96,18 +95,24 @@ def submit_order():
         flash(f"您點了 {total_main_qty} 份主餐，但只選擇了 {len(attached_drinks)} 杯附餐飲料，請至少選擇等量的飲料！")
         return render_template('index.html', menu=menu, drinks=drinks, form_data=request.form)
 
-    # 折抵計算
-    offset_remaining = total_main_qty * 30
-    for drink in attached_drinks:
-        if offset_remaining >= drink["price"]:
-            offset_remaining -= drink["price"]
-        else:
-            total += drink["price"] - offset_remaining if offset_remaining > 0 else drink["price"]
-            offset_remaining = max(offset_remaining - drink["price"], 0)
+    # 折抵邏輯修正：飲料由高至低價格排序，抵扣30元/主餐
+    remaining_discount = total_main_qty * 30
+    sorted_attached_drinks = sorted(attached_drinks, key=lambda d: d["price"], reverse=True)
+    drink_total = 0
 
+    for drink in sorted_attached_drinks:
+        if remaining_discount >= drink["price"]:
+            remaining_discount -= drink["price"]
+        else:
+            discount = min(drink["price"], remaining_discount)
+            drink_total += drink["price"] - discount
+            remaining_discount -= discount
+
+    # 加總主餐價格
     for item in order_items:
         if item["category"] != "飲料類":
             total += item["price"] * item["quantity"]
+    total += drink_total
 
     if order_items:
         new_order = {
@@ -133,7 +138,7 @@ def transfer_payment(order_id):
     order = next((o for o in orders if o["id"] == order_id), None)
     if not order:
         return redirect(url_for('index'))
-    return render_template('success.html', order=order)
+    return render_template('transfer_payment.html', order=order)
 
 @app.route('/bank_transfer/<int:order_id>')
 def bank_transfer(order_id):
