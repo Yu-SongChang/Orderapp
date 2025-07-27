@@ -13,14 +13,15 @@ PASSWORD = '1234'
 menu = [
     {"name": "咖哩雞排飯", "price": 130, "image": "咖哩雞排飯.jpg", "category": "咖哩飯類"},
     {"name": "咖哩豬排飯", "price": 125, "image": "咖哩豬排飯.jpg", "category": "咖哩飯類"},
-    {"name": "咖啡", "price": 50, "image": "咖啡.jpg", "category": "飲料類"},
-    {"name": "拉花咖啡", "price": 65, "image": "拉花咖啡.jpg", "category": "飲料類"},
-    {"name": "普洱茶", "price": 45, "image": "普洱茶.jpg", "category": "飲料類"},
-    {"name": "紅烏龍茶", "price": 45, "image": "紅烏龍茶.jpg", "category": "飲料類"},
+    {"name": "咖啡", "price": 50, "category": "飲料類"},
+    {"name": "拉花咖啡", "price": 65, "category": "飲料類"},
+    {"name": "普洱茶", "price": 45, "category": "飲料類"},
+    {"name": "紅烏龍茶", "price": 45, "category": "飲料類"},
     {"name": "青醬義大利麵", "price": 110, "image": "青醬義大利麵.jpg", "category": "義大利麵類"},
     {"name": "紅醬義大利麵", "price": 115, "image": "紅醬義大利麵.jpg", "category": "義大利麵類"},
     {"name": "海鮮pizza", "price": 150, "image": "海鮮pizza.jpg", "category": "Pizza類"},
-    {"name": "總匯pizza", "price": 160, "image": "總匯pizza.jpg", "category": "Pizza類"}
+    {"name": "總匯pizza", "price": 160, "image": "總匯pizza.jpg", "category": "Pizza類"},
+    {"name": "厚片吐司", "price": 160, "image": "厚片土司.jpg", "category": "下午茶類"}
 ]
 
 orders = []
@@ -43,7 +44,7 @@ def requires_auth(f):
 
 @app.route('/')
 def index():
-    return render_template('index.html', menu=menu, drinks=drinks, request_form=None)
+    return render_template('index.html', menu=menu, drinks=drinks, request_form=request.form)
 
 @app.route('/submit_order', methods=['POST'])
 def submit_order():

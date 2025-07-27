@@ -94,6 +94,24 @@
       border-radius: 6px;
       margin-bottom: 15px;
     }
+    .category-scroll-container {
+      display: flex;
+      overflow-x: auto;
+      white-space: nowrap;
+      padding: 10px 0;
+      margin-bottom: 15px;
+      gap: 10px;
+      scrollbar-width: none;
+    }
+    .category-scroll-container::-webkit-scrollbar {
+      display: none;
+    }
+    .category-scroll-container .category-btn {
+      flex: 0 0 auto;
+      width: auto;
+      max-width: none;
+      display: inline-block;
+    }
   </style>
 </head>
 <body>
@@ -118,40 +136,44 @@
     <button class="toggle-btn" onclick="toggleAll(false)">全部收合</button>
 
     <form method="POST" action="/submit_order">
-      {% for category_id, category_label in [('pasta', '義大利麵類'), ('pizza', 'Pizza類'), ('curry', '咖哩飯類')] %}
-      <button type="button" class="category-btn" onclick="toggleCategory('{{ category_id }}')">
-        {{ category_label.replace('類', '') }}
-      </button>
-      <div id="{{ category_id }}" class="category-section">
-        {% for item in menu if item.category == category_label %}
-        <div class="product">
-          <div class="product-info">
-            <strong>{{ item.name }}</strong><br />
-            <span class="price">${{ item.price }}</span>
-            <label>
-              數量：
-              <input type="number" name="quantity_{{ item.name }}"
-                value="{{ form_data['quantity_' ~ item.name] if form_data else 0 }}" min="0" />
-            </label>
-            <div class="drink-list">
-              <p>請分配附餐飲料（超過 $30 飲品須補差額）：</p>
-              {% for drink in drinks %}
-              <label>
-                {{ drink.name }}（${{ drink.price }}{% if drink.price > 30 %}，補{{ drink.price - 30 }}元{% endif %}）：
-                <input type="number" name="drink_for_{{ item.name }}_{{ drink.name }}"
-                  value="{{ form_data['drink_for_' ~ item.name ~ '_' ~ drink.name] if form_data else 0 }}" min="0" />
-              </label>
-              {% endfor %}
-            </div>
-          </div>
-          <img src="/static/images/{{ item.image }}" alt="{{ item.name }}" />
-        </div>
+      <div class="category-scroll-container">
+        {% for category_id, category_label in [('pasta', '義大利麵類'), ('pizza', 'Pizza類'), ('curry', '咖哩飯類'), ('tea', '下午茶類')] %}
+          <button type="button" class="category-btn" onclick="toggleCategory('{{ category_id }}')">
+            {{ category_label.replace('類', '') }}
+          </button>
         {% endfor %}
+        <button type="button" class="category-btn" onclick="toggleCategory('drinks')">單點飲料</button>
       </div>
+
+      {% for category_id, category_label in [('pasta', '義大利麵類'), ('pizza', 'Pizza類'), ('curry', '咖哩飯類'), ('tea', '下午茶類')] %}
+        <div id="{{ category_id }}" class="category-section">
+          {% for item in menu if item.category == category_label %}
+          <div class="product">
+            <div class="product-info">
+              <strong>{{ item.name }}</strong><br />
+              <span class="price">${{ item.price }}</span>
+              <label>
+                數量：
+                <input type="number" name="quantity_{{ item.name }}"
+                  value="{{ form_data['quantity_' ~ item.name] if form_data else 0 }}" min="0" />
+              </label>
+              <div class="drink-list">
+                <p>請分配附餐飲料（超過 $30 飲品須補差額）：</p>
+                {% for drink in drinks %}
+                <label>
+                  {{ drink.name }}（${{ drink.price }}{% if drink.price > 30 %}，補{{ drink.price - 30 }}元{% endif %}）：
+                  <input type="number" name="drink_for_{{ item.name }}_{{ drink.name }}"
+                    value="{{ form_data['drink_for_' ~ item.name ~ '_' ~ drink.name] if form_data else 0 }}" min="0" />
+                </label>
+                {% endfor %}
+              </div>
+            </div>
+            <img src="/static/images/{{ item.image }}" alt="{{ item.name }}" />
+          </div>
+          {% endfor %}
+        </div>
       {% endfor %}
 
-      <!-- 單點飲料 -->
-      <button type="button" class="category-btn" onclick="toggleCategory('drinks')">單點飲料</button>
       <div id="drinks" class="category-section">
         {% for drink in drinks %}
         <div class="product">
@@ -164,7 +186,6 @@
                 value="{{ form_data['quantity_' ~ drink.name] if form_data else 0 }}" min="0" />
             </label>
           </div>
-          <img src="/static/images/{{ drink.image }}" alt="{{ drink.name }}" />
         </div>
         {% endfor %}
       </div>
