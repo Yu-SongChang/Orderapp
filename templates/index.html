@@ -75,17 +75,6 @@
       display: block;
       margin: 4px 0;
     }
-    .drink-list {
-      margin-top: 10px;
-      padding-left: 10px;
-    }
-    .drink-list label {
-      display: block;
-      margin-bottom: 4px;
-    }
-    .drink-list input[type="number"] {
-      width: 50px;
-    }
     .flash-message {
       background-color: #ffd2d2;
       color: #900;
@@ -111,6 +100,11 @@
       width: auto;
       max-width: none;
       display: inline-block;
+    }
+    .reminder {
+      color: red;
+      font-weight: bold;
+      margin: 6px 0;
     }
   </style>
 </head>
@@ -152,21 +146,12 @@
             <div class="product-info">
               <strong>{{ item.name }}</strong><br />
               <span class="price">${{ item.price }}</span>
+              <p class="reminder">※ 每份主餐皆需搭配一杯飲料，請至下方飲料區選擇，飲料總數須大於等於主餐總數</p>
               <label>
                 數量：
                 <input type="number" name="quantity_{{ item.name }}"
                   value="{{ form_data['quantity_' ~ item.name] if form_data else 0 }}" min="0" />
               </label>
-              <div class="drink-list">
-                <p>請分配附餐飲料（超過 $30 飲品須補差額）：</p>
-                {% for drink in drinks %}
-                <label>
-                  {{ drink.name }}（${{ drink.price }}{% if drink.price > 30 %}，補{{ drink.price - 30 }}元{% endif %}）：
-                  <input type="number" name="drink_for_{{ item.name }}_{{ drink.name }}"
-                    value="{{ form_data['drink_for_' ~ item.name ~ '_' ~ drink.name] if form_data else 0 }}" min="0" />
-                </label>
-                {% endfor %}
-              </div>
             </div>
             <img src="/static/images/{{ item.image }}" alt="{{ item.name }}" />
           </div>

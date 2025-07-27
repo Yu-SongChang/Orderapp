@@ -75,32 +75,27 @@
 
                     <ul>
                         {% for item in order["items"] %}
+                        {% set item_index = loop.index0 %}
                             <li>
                                 {% if item.category == "飲料類" %}
                                     🥤 {{ item.name }} × {{ item.quantity }}
+                                    {% if item.done %} ✅ {% else %} ⏳ {% endif %}
                                 {% else %}
-                                    🍽 {{ item.name }} × {{ item.quantity }}
-                                    {% if item.drinks %}
-                                        <div class="drink-detail">
-                                            附餐飲料：
-                                            <ul>
-                                                {% for d in item.drinks %}
-                                                    <li>
-                                                        {{ d.name }}（${{ d.price }}{% if d.price > 30 %}，補{{ d.price - 30 }}元{% else %}，折抵30元{% endif %}）
-                                                    </li>
-                                                {% endfor %}
-                                            </ul>
-                                        </div>
-                                    {% endif %}
-                                {% endif %}
-
-                                {% if item.done %}
-                                    ✅
-                                {% else %}
-                                    ⏳
-                                    <form method="POST" action="/mark_item_done/{{ order.id }}/{{ loop.index0 }}" style="display: inline;">
-                                        <button type="submit">出餐完成</button>
-                                    </form>
+                                    🍽 {{ item.name }}
+                                    <ul>
+                                        {% for i in range(item.quantity) %}
+                                            <li>
+                                                {% if item.done_list[i] %}
+                                                    ✅
+                                                {% else %}
+                                                    ⏳
+                                                    <form method="POST" action="/mark_item_done/{{ order.id }}/{{ item_index }}/{{ i }}" style="display: inline;">
+                                                        <button type="submit">出餐完成</button>
+                                                    </form>
+                                                {% endif %}
+                                            </li>
+                                        {% endfor %}
+                                    </ul>
                                 {% endif %}
                             </li>
                         {% endfor %}
