@@ -74,7 +74,6 @@ def submit_order():
         if qty <= 0:
             continue
 
-        # 建立餐點資料
         item_entry = {
             "name": item["name"],
             "price": item["price"],
@@ -83,7 +82,6 @@ def submit_order():
             "done": False
         }
 
-        # 若是主餐類，加上 done_list
         if item["category"] != "飲料類":
             total_main_qty += qty
             item_entry["done_list"] = [False] * qty
@@ -94,12 +92,10 @@ def submit_order():
 
         order_items.append(item_entry)
 
-    # 檢查飲料是否足夠
     if total_drink_qty < total_main_qty:
         flash(f"您點了 {total_main_qty} 份主餐，但只選擇了 {total_drink_qty} 杯飲料，請至少選擇等量的飲料！")
         return render_template('index.html', menu=menu, drinks=drinks, form_data=request.form)
 
-    # 折抵邏輯：飲料由高到低排序，每份主餐折抵 30 元
     remaining_discount = total_main_qty * 30
     drink_total = 0
     sorted_drinks = sorted(drink_items, key=lambda d: d["price"], reverse=True)
@@ -114,16 +110,18 @@ def submit_order():
             remaining_discount -= discount
     total += drink_total
 
-    # 加總主餐價格
     for item in order_items:
         if item["category"] != "飲料類":
             total += item["price"] * item["quantity"]
+
+    note = request.form.get("note", "")
 
     if order_items:
         new_order = {
             "id": len(orders) + 1,
             "items": order_items,
             "total": total,
+            "note": note,
             "timestamp": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
             "completed": False
         }
@@ -197,7 +195,6 @@ def mark_item_done(order_id, item_index, portion_index):
         if order["id"] == order_id:
             if 0 <= item_index < len(order["items"]):
                 item = order["items"][item_index]
-                # ✅ 向下相容處理
                 if "done_list" not in item:
                     item["done_list"] = [False] * item["quantity"]
                 if 0 <= portion_index < len(item["done_list"]):

@@ -93,6 +93,10 @@
         {% endfor %}
     </ul>
 
+    {% if order.note %}
+        <p><strong>顧客備註：</strong> {{ order.note }}</p>
+    {% endif %}
+
     <p><strong>總金額：</strong> ${{ order.total }}</p>
 
     <p class="status">
